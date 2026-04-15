@@ -1,0 +1,75 @@
+{
+  "name": "OnboardingChecklist",
+  "type": "object",
+  "properties": {
+    "onboarding_session_id": {
+      "type": "string",
+      "description": "Associated onboarding session"
+    },
+    "client_id": {
+      "type": "string",
+      "description": "Client"
+    },
+    "client_name": {
+      "type": "string"
+    },
+    "item_category": {
+      "type": "string",
+      "enum": [
+        "brand_info",
+        "billing_info",
+        "approvals_contact",
+        "connected_accounts",
+        "assets_uploaded",
+        "strategy_defined",
+        "package_assigned",
+        "permissions_configured",
+        "launch_rules_configured"
+      ],
+      "description": "Category of checklist item"
+    },
+    "item_label": {
+      "type": "string",
+      "description": "Display label"
+    },
+    "item_description": {
+      "type": "string",
+      "description": "What needs to be done"
+    },
+    "is_completed": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_mandatory": {
+      "type": "boolean",
+      "default": false,
+      "description": "Must be completed before launch"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "completed_by": {
+      "type": "string",
+      "description": "User who completed"
+    },
+    "evidence": {
+      "type": "string",
+      "description": "What was done to complete"
+    },
+    "blocked_reason": {
+      "type": "string",
+      "description": "Why it can't be completed (if blocked)"
+    },
+    "order": {
+      "type": "number",
+      "description": "Display order"
+    }
+  },
+  "required": [
+    "onboarding_session_id",
+    "client_id",
+    "item_category",
+    "item_label"
+  ]
+}

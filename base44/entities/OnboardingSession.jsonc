@@ -1,0 +1,135 @@
+{
+  "name": "OnboardingSession",
+  "type": "object",
+  "properties": {
+    "client_id": {
+      "type": "string",
+      "description": "Associated client"
+    },
+    "client_name": {
+      "type": "string",
+      "description": "Client name"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "in_progress",
+        "completed",
+        "abandoned",
+        "paused"
+      ],
+      "default": "in_progress",
+      "description": "Onboarding status"
+    },
+    "current_step": {
+      "type": "number",
+      "default": 1,
+      "description": "Current step in wizard"
+    },
+    "total_steps": {
+      "type": "number",
+      "default": 9,
+      "description": "Total onboarding steps"
+    },
+    "completion_percent": {
+      "type": "number",
+      "default": 0,
+      "description": "Progress percentage"
+    },
+    "brand_info_complete": {
+      "type": "boolean",
+      "default": false
+    },
+    "billing_info_complete": {
+      "type": "boolean",
+      "default": false
+    },
+    "approvals_contact_complete": {
+      "type": "boolean",
+      "default": false
+    },
+    "connected_accounts_complete": {
+      "type": "boolean",
+      "default": false
+    },
+    "assets_uploaded_complete": {
+      "type": "boolean",
+      "default": false
+    },
+    "strategy_defined_complete": {
+      "type": "boolean",
+      "default": false
+    },
+    "package_assigned_complete": {
+      "type": "boolean",
+      "default": false
+    },
+    "permissions_configured_complete": {
+      "type": "boolean",
+      "default": false
+    },
+    "launch_rules_configured_complete": {
+      "type": "boolean",
+      "default": false
+    },
+    "ai_recommendations": {
+      "type": "object",
+      "properties": {
+        "brand_summary": {
+          "type": "string"
+        },
+        "recommended_package": {
+          "type": "string"
+        },
+        "recommended_campaigns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "missing_items": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "strategy_summary": {
+          "type": "string"
+        },
+        "generated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "last_activity": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "initiated_by": {
+      "type": "string",
+      "description": "User email who started onboarding"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "client_id",
+    "status"
+  ]
+}
