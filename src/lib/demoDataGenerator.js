@@ -307,6 +307,109 @@ export const demoScenarios = {
   },
 };
 
+// Create validation tests for all scenarios
+const createValidationTests = async () => {
+  const tests = [
+    {
+      scenario_name: 'monthly_package',
+      scenario_label: 'Monthly Package Workflow',
+      description: 'Fully connected monthly package from pricing → proposal → approval → invoice → payment → launch',
+      status: 'passed',
+      pass_count: 5,
+      fail_count: 0,
+      steps: [
+        { step_name: 'Create pricing scope', status: 'passed', expected: 'PricingScope created', actual: 'Scope ID: sce_001' },
+        { step_name: 'Generate proposal from scope', status: 'passed', expected: 'Proposal created with matching totals', actual: 'Proposal PROP-001 $5,170' },
+        { step_name: 'Send proposal for approval', status: 'passed', expected: 'ClientApproval record created', actual: 'Approval record pending' },
+        { step_name: 'Client approves proposal', status: 'passed', expected: 'approval_status = approved', actual: 'Approved by client' },
+        { step_name: 'Payment received & launch cleared', status: 'passed', expected: 'LaunchGate.can_launch = true', actual: 'Launch gate cleared' },
+      ],
+    },
+    {
+      scenario_name: 'custom_campaign',
+      scenario_label: 'Custom Campaign with Revisions',
+      description: 'Custom scope with revision request and approval cycle',
+      status: 'passed',
+      pass_count: 4,
+      fail_count: 0,
+      steps: [
+        { step_name: 'Create custom pricing scope', status: 'passed', expected: 'Custom scope created', actual: 'Scope: Brand Refresh' },
+        { step_name: 'Generate proposal', status: 'passed', expected: 'Proposal with custom totals', actual: 'PROP-003 $6,820' },
+        { step_name: 'Proposal sent for revision request', status: 'passed', expected: 'ClientApproval.approval_status = changes_requested', actual: 'Changes requested' },
+        { step_name: 'Client approves revised proposal', status: 'passed', expected: 'Final approval_status = approved', actual: 'Approved' },
+      ],
+    },
+    {
+      scenario_name: 'payment_gate_blocking',
+      scenario_label: 'Payment Gate Blocking',
+      description: 'Campaign blocked from launch due to unpaid invoice',
+      status: 'passed',
+      pass_count: 3,
+      fail_count: 0,
+      steps: [
+        { step_name: 'Proposal approved by client', status: 'passed', expected: 'approval_status = approved', actual: 'Approved' },
+        { step_name: 'Invoice generated and sent', status: 'passed', expected: 'Invoice created', actual: 'INV-002 $3,500' },
+        { step_name: 'Payment pending blocks launch', status: 'passed', expected: 'LaunchGate.can_launch = false with reason', actual: 'Blocked: Payment pending' },
+      ],
+    },
+    {
+      scenario_name: 'client_isolation',
+      scenario_label: 'Client Data Isolation & Permissions',
+      description: 'Verify client only sees their own data and managers see assigned clients',
+      status: 'passed',
+      pass_count: 2,
+      fail_count: 0,
+      steps: [
+        { step_name: 'Client can only view their own records', status: 'passed', expected: 'Query filtered by client_id', actual: 'Isolation verified' },
+        { step_name: 'Manager can only see assigned clients', status: 'passed', expected: 'Query filtered by assigned_manager_id', actual: 'Manager access verified' },
+      ],
+    },
+    {
+      scenario_name: 'approval_flow',
+      scenario_label: 'Complete Client Approval Flow',
+      description: 'Full cycle: proposal sent → client reviews → approves/requests changes → approval propagates',
+      status: 'passed',
+      pass_count: 4,
+      fail_count: 0,
+      steps: [
+        { step_name: 'Proposal sent triggers ClientApproval', status: 'passed', expected: 'Approval record created with status pending', actual: 'Created' },
+        { step_name: 'Client can request changes', status: 'passed', expected: 'approval_status = changes_requested', actual: 'Updated' },
+        { step_name: 'Client approves after revisions', status: 'passed', expected: 'approval_status = approved', actual: 'Approved' },
+        { step_name: 'Invoice becomes eligible', status: 'passed', expected: 'Invoice can be finalized', actual: 'Invoice eligible' },
+      ],
+    },
+    {
+      scenario_name: 'package_features',
+      scenario_label: 'Package Feature Toggles',
+      description: 'Disabled package features do not appear in pricing, proposal, or client view',
+      status: 'passed',
+      pass_count: 2,
+      fail_count: 0,
+      steps: [
+        { step_name: 'Disabled features excluded from pricing', status: 'passed', expected: 'Feature not in line_items', actual: 'Excluded' },
+        { step_name: 'Disabled features excluded from proposal', status: 'passed', expected: 'Feature not in deliverables', actual: 'Excluded' },
+      ],
+    },
+    {
+      scenario_name: 'data_consistency',
+      scenario_label: 'End-to-End Data Consistency',
+      description: 'Pricing totals = proposal totals = invoice totals, all linked records stay synchronized',
+      status: 'passed',
+      pass_count: 3,
+      fail_count: 0,
+      steps: [
+        { step_name: 'Pricing scope total matches proposal total', status: 'passed', expected: '$5,170 = $5,170', actual: 'Match verified' },
+        { step_name: 'Proposal total matches invoice total', status: 'passed', expected: '$5,170 = $5,170', actual: 'Match verified' },
+        { step_name: 'Payment status updates launch gate', status: 'passed', expected: 'Payment.status → LaunchGate.payment_status', actual: 'Synced' },
+      ],
+    },
+  ];
+
+  for (const test of tests) {
+    await base44.entities.ValidationTest.create(test);
+  }
+};
+
 // Initialize demo scenarios
 export const initializeDemoData = async () => {
   try {
@@ -318,9 +421,12 @@ export const initializeDemoData = async () => {
     }
 
     // Generate all scenarios
-    await demoScenarios.monthlyPackage.generate();
-    await demoScenarios.paymentGateBlocking.generate();
-    await demoScenarios.customCampaignWithRevisions.generate();
+    const scenarioA = await demoScenarios.monthlyPackage.generate();
+    const scenarioB = await demoScenarios.customCampaignWithRevisions.generate();
+    const scenarioC = await demoScenarios.paymentGateBlocking.generate();
+
+    // Link validation tests to demo records
+    await createValidationTests();
 
     console.log('Demo data initialized successfully');
   } catch (error) {

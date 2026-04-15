@@ -26,6 +26,7 @@ import InvoiceCenter from '@/pages/InvoiceCenter';
 import LaunchGateCenter from '@/pages/LaunchGateCenter';
 import ClientDashboard from '@/pages/ClientDashboard';
 import QADashboard from '@/pages/QADashboard';
+import ClientApprovalCenter from '@/pages/ClientApprovalCenter';
 import { initializeDemoData } from '@/lib/demoDataGenerator';
 
 const AuthenticatedApp = () => {
@@ -77,6 +78,7 @@ const AuthenticatedApp = () => {
         <Route path="/launch-gate" element={<LaunchGateCenter />} />
         <Route path="/client-dashboard" element={<ClientDashboard />} />
         <Route path="/qa-dashboard" element={<QADashboard />} />
+        <Route path="/approval-center" element={<ClientApprovalCenter />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>

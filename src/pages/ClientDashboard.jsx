@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
-import { Lock, CheckCircle2, AlertCircle, DollarSign, FileText, Calendar, Eye, TrendingUp } from 'lucide-react';
+import { Lock, CheckCircle2, AlertCircle, DollarSign, FileText, Calendar, Eye, TrendingUp, MessageSquare } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
 import InteractiveMetricCard from '@/components/command-center/InteractiveMetricCard';
 import DrillDownPanel from '@/components/command-center/DrillDownPanel';
 
@@ -45,6 +46,18 @@ export default function ClientDashboard() {
   const { data: launchGates = [] } = useQuery({
     queryKey: ['launchGates', currentClient?.id],
     queryFn: () => currentClient ? base44.entities.LaunchGate.filter({ client_id: currentClient.id }) : [],
+    enabled: !!currentClient,
+  });
+
+  const { data: approvals = [] } = useQuery({
+    queryKey: ['clientApprovals', currentClient?.id],
+    queryFn: () => currentClient ? base44.entities.ClientApproval.filter({ client_id: currentClient.id }) : [],
+    enabled: !!currentClient,
+  });
+
+  const { data: proposals = [] } = useQuery({
+    queryKey: ['clientProposals', currentClient?.id],
+    queryFn: () => currentClient ? base44.entities.Proposal.filter({ client_id: currentClient.id }) : [],
     enabled: !!currentClient,
   });
 
@@ -101,8 +114,9 @@ export default function ClientDashboard() {
 
       {/* Tabs */}
       <Tabs defaultValue="campaigns" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4 bg-secondary/50">
+        <TabsList className="grid w-full grid-cols-5 bg-secondary/50">
           <TabsTrigger value="campaigns">Campaigns</TabsTrigger>
+          <TabsTrigger value="approvals">Approvals</TabsTrigger>
           <TabsTrigger value="content">Content</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
           <TabsTrigger value="billing">Billing</TabsTrigger>
@@ -158,6 +172,102 @@ export default function ClientDashboard() {
             ) : (
               <div className="glass-panel rounded-xl p-12 text-center">
                 <p className="text-muted-foreground">No campaigns yet</p>
+              </div>
+            )}
+          </div>
+        </TabsContent>
+
+        {/* Approvals Tab */}
+        <TabsContent value="approvals" className="space-y-4">
+          <div className="space-y-3">
+            {approvals.length > 0 ? (
+              approvals.map((approval, idx) => {
+                const proposal = proposals.find(p => p.id === approval.proposal_id);
+                
+                return (
+                  <motion.div
+                    key={approval.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.05 }}
+                    className="glass-panel rounded-xl p-6 border-border/50"
+                  >
+                    <div className="space-y-4">
+                      {/* Header */}
+                      <div className="flex items-start justify-between gap-4">
+                        <div>
+                          <h3 className="text-lg font-semibold text-foreground">{approval.proposal_number}</h3>
+                          <p className="text-sm text-muted-foreground mt-1">{approval.campaign_name}</p>
+                        </div>
+                        <span className={`text-xs px-3 py-1.5 rounded-full font-medium flex-shrink-0 ${
+                          approval.approval_status === 'approved' ? 'bg-emerald-500/20 text-emerald-400' :
+                          approval.approval_status === 'changes_requested' ? 'bg-blue-500/20 text-blue-400' :
+                          approval.approval_status === 'rejected' ? 'bg-red-500/20 text-red-400' :
+                          'bg-amber-500/20 text-amber-400'
+                        }`}>
+                          {approval.approval_status === 'pending' ? 'Awaiting Your Review' :
+                           approval.approval_status === 'changes_requested' ? 'Changes Requested' :
+                           approval.approval_status}
+                        </span>
+                      </div>
+
+                      {/* Proposal Details */}
+                      {proposal && (
+                        <div className="grid sm:grid-cols-3 gap-3 py-3 border-t border-border/30">
+                          <div>
+                            <p className="text-xs text-muted-foreground mb-1">Total Investment</p>
+                            <p className="text-lg font-bold text-primary">${proposal.estimated_price.toLocaleString()}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-muted-foreground mb-1">Timeline</p>
+                            <p className="text-sm font-medium text-foreground">{proposal.timeline}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-muted-foreground mb-1">Platforms</p>
+                            <p className="text-sm font-medium text-foreground">{proposal.platforms?.length || 0} platforms</p>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Feedback Section */}
+                      {approval.feedback && (
+                        <div className="p-4 rounded-lg bg-blue-500/10 border border-blue-500/30">
+                          <div className="flex items-start gap-2 mb-2">
+                            <MessageSquare className="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
+                            <p className="font-medium text-blue-400 text-sm">Feedback from Agency</p>
+                          </div>
+                          <p className="text-sm text-foreground">{approval.feedback}</p>
+                        </div>
+                      )}
+
+                      {/* Actions */}
+                      {approval.approval_status === 'pending' && (
+                        <div className="flex gap-3 pt-3 border-t border-border/30">
+                          <Button className="flex-1 bg-emerald-600 hover:bg-emerald-700">
+                            <CheckCircle2 className="w-4 h-4 mr-2" />
+                            Approve
+                          </Button>
+                          <Button variant="outline" className="flex-1">
+                            <AlertCircle className="w-4 h-4 mr-2" />
+                            Request Changes
+                          </Button>
+                        </div>
+                      )}
+
+                      {approval.approval_status === 'approved' && (
+                        <div className="flex items-center gap-2 p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                          <span className="text-sm font-medium text-emerald-400">You approved this proposal on {new Date(approval.approved_date).toLocaleDateString()}</span>
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
+                );
+              })
+            ) : (
+              <div className="glass-panel rounded-xl p-12 text-center">
+                <FileText className="w-12 h-12 text-muted-foreground/30 mx-auto mb-3" />
+                <p className="text-muted-foreground">No pending approvals</p>
               </div>
             )}
           </div>

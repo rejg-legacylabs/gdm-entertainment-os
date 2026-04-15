@@ -5,28 +5,38 @@ import { cn } from '@/lib/utils';
 
 export default function LaunchGateReadiness({ gate, campaign, invoices, clientApprovals }) {
   const invoice = invoices.find(i => i.id === gate.invoice_id);
-  const approval = clientApprovals.find(a => a.proposal_id === gate.campaign_id);
+  const approval = clientApprovals.find(a => a.campaign_id === gate.campaign_id);
+
+  const approvalMet = !gate.approval_required || (approval && approval.approval_status === 'approved');
+  const paymentMet = !gate.payment_required || gate.payment_status === 'paid';
 
   const requirements = [
     {
-      title: 'Client Approval',
+      title: 'Proposal Approved',
       required: gate.approval_required,
-      met: gate.approval_status === 'approved',
-      details: approval?.feedback || 'Waiting for client review',
+      met: approvalMet,
+      details: approval ? (approval.approval_status === 'approved' ? 'Approved by client' : `Status: ${approval.approval_status}`) : 'No approval record',
       icon: CheckCircle2,
     },
     {
-      title: 'Payment',
+      title: 'Invoice Generated',
+      required: !!invoice,
+      met: !!invoice,
+      details: invoice ? `Invoice #${invoice.invoice_number} - $${invoice.total_amount.toLocaleString()}` : 'No invoice yet',
+      icon: DollarSign,
+    },
+    {
+      title: 'Payment Received',
       required: gate.payment_required,
-      met: gate.payment_status === 'paid',
-      details: invoice ? `${gate.amount_paid ? 'Paid: $' + gate.amount_paid.toLocaleString() + ' / ' : ''}Pending: $${(gate.total_due - (gate.amount_paid || 0)).toLocaleString()}` : 'No invoice',
+      met: paymentMet,
+      details: paymentMet ? `Paid: $${gate.amount_paid?.toLocaleString() || '0'}` : `Pending: $${(gate.total_due - (gate.amount_paid || 0)).toLocaleString()}`,
       icon: DollarSign,
     },
     {
       title: 'Content Ready',
       required: true,
-      met: campaign?.status === 'active',
-      details: campaign?.status || 'Pending',
+      met: campaign?.total_posts > 0,
+      details: campaign?.total_posts ? `${campaign.total_posts} posts ready` : 'No posts yet',
       icon: CheckCircle2,
     },
     {

@@ -62,10 +62,28 @@ export default function ProposalStudio() {
 
   const sendProposal = useMutation({
     mutationFn: async (proposalId) => {
-      return await base44.entities.Proposal.update(proposalId, { status: 'sent' });
+      const proposal = proposals.find(p => p.id === proposalId);
+      
+      // Update proposal status
+      await base44.entities.Proposal.update(proposalId, { status: 'sent' });
+
+      // Create ClientApproval record
+      const user = await base44.auth.me();
+      await base44.entities.ClientApproval.create({
+        proposal_id: proposalId,
+        proposal_number: proposal.proposal_number,
+        client_id: proposal.client_id,
+        client_name: proposal.client_name,
+        campaign_id: proposal.campaign_id,
+        approval_type: 'proposal',
+        approval_status: 'pending',
+        requested_by: user.email,
+        requested_date: new Date().toISOString(),
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['proposals'] });
+      queryClient.invalidateQueries({ queryKey: ['client_approvals'] });
     },
   });
 
