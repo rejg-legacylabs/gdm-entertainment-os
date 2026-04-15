@@ -1,0 +1,161 @@
+{
+  "name": "ConnectedAccount",
+  "type": "object",
+  "properties": {
+    "client_id": {
+      "type": "string",
+      "description": "Associated client"
+    },
+    "client_name": {
+      "type": "string",
+      "description": "Client name for reference"
+    },
+    "brand_id": {
+      "type": "string",
+      "description": "Associated brand"
+    },
+    "brand_name": {
+      "type": "string",
+      "description": "Brand name for reference"
+    },
+    "platform": {
+      "type": "string",
+      "enum": [
+        "instagram",
+        "facebook",
+        "tiktok",
+        "linkedin",
+        "youtube",
+        "twitter"
+      ],
+      "description": "Social platform"
+    },
+    "account_name": {
+      "type": "string",
+      "description": "Account display name on platform"
+    },
+    "account_handle": {
+      "type": "string",
+      "description": "Username/handle on platform"
+    },
+    "platform_account_id": {
+      "type": "string",
+      "description": "Platform's internal account ID"
+    },
+    "connector_id": {
+      "type": "string",
+      "description": "App User Connector ID"
+    },
+    "connection_status": {
+      "type": "string",
+      "enum": [
+        "connected",
+        "expiring_soon",
+        "expired",
+        "reconnect_required",
+        "disconnected"
+      ],
+      "default": "connected",
+      "description": "Current connection status"
+    },
+    "token_expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When OAuth token expires"
+    },
+    "token_last_refreshed": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last successful token refresh"
+    },
+    "permissions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Granted OAuth scopes"
+    },
+    "analytics_sync_enabled": {
+      "type": "boolean",
+      "default": true,
+      "description": "Sync analytics data"
+    },
+    "analytics_last_sync": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last analytics sync time"
+    },
+    "comment_sync_enabled": {
+      "type": "boolean",
+      "default": true,
+      "description": "Sync comments/messages"
+    },
+    "comment_last_sync": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last comment sync time"
+    },
+    "publish_enabled": {
+      "type": "boolean",
+      "default": true,
+      "description": "Can publish to this account"
+    },
+    "publish_available": {
+      "type": "boolean",
+      "default": true,
+      "description": "Account is available for publishing"
+    },
+    "followers_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Current follower count"
+    },
+    "followers_last_updated": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When follower count was last updated"
+    },
+    "is_primary": {
+      "type": "boolean",
+      "default": false,
+      "description": "Primary account for brand"
+    },
+    "connected_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When account was connected"
+    },
+    "connected_by": {
+      "type": "string",
+      "description": "User email who connected"
+    },
+    "last_activity": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last time this account was used"
+    },
+    "health_score": {
+      "type": "number",
+      "description": "0-100 account health"
+    },
+    "sync_failures": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of sync failures"
+    },
+    "publish_failures": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of publish failures"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Internal notes"
+    }
+  },
+  "required": [
+    "client_id",
+    "platform",
+    "connector_id"
+  ]
+}
