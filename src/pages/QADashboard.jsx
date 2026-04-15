@@ -277,7 +277,7 @@ export default function QADashboard() {
           const test = validationTests.find(t => t.scenario_name === scenario.name);
           const testStatus = test?.status || 'pending';
           const isExpanded = expandedScenario === scenario.name;
-          const { campaign, invoice, client } = test ? getRelatedRecords(test) : {};
+          const { campaign, invoice, client, proposal, approval, launchGate } = test ? getRelatedRecords(test) : {};
 
           const statusConfig = {
             pending: { icon: Clock, color: 'slate', label: 'Not Run' },
