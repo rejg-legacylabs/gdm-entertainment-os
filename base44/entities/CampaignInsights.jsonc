@@ -1,0 +1,149 @@
+{
+  "name": "CampaignInsights",
+  "type": "object",
+  "properties": {
+    "campaign_id": {
+      "type": "string",
+      "description": "Associated campaign"
+    },
+    "campaign_name": {
+      "type": "string"
+    },
+    "client_id": {
+      "type": "string",
+      "description": "Client"
+    },
+    "client_name": {
+      "type": "string"
+    },
+    "brand_id": {
+      "type": "string"
+    },
+    "brand_name": {
+      "type": "string"
+    },
+    "what_worked": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "element": {
+            "type": "string",
+            "description": "What element (hook, CTA, format, timing, etc.)"
+          },
+          "description": {
+            "type": "string"
+          },
+          "performance_lift": {
+            "type": "number",
+            "description": "% better than baseline"
+          },
+          "post_count": {
+            "type": "number",
+            "description": "How many posts tested this"
+          }
+        }
+      },
+      "description": "What performed well"
+    },
+    "what_to_try_next": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "recommendation": {
+            "type": "string"
+          },
+          "rationale": {
+            "type": "string"
+          },
+          "expected_lift": {
+            "type": "number",
+            "description": "Expected performance lift %"
+          },
+          "priority": {
+            "type": "string",
+            "enum": [
+              "high",
+              "medium",
+              "low"
+            ]
+          }
+        }
+      },
+      "description": "Recommendations for next iteration"
+    },
+    "best_performing_posts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "post_id": {
+            "type": "string"
+          },
+          "engagement_rate": {
+            "type": "number"
+          },
+          "key_attributes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "description": "Top performing posts"
+    },
+    "weak_themes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Content themes to avoid"
+    },
+    "platform_performance_rank": {
+      "type": "object",
+      "description": "Engagement rate by platform"
+    },
+    "optimal_posting_window": {
+      "type": "object",
+      "properties": {
+        "best_day": {
+          "type": "string"
+        },
+        "best_hour": {
+          "type": "number"
+        },
+        "time_zone": {
+          "type": "string"
+        }
+      }
+    },
+    "audience_sentiment_trend": {
+      "type": "string",
+      "enum": [
+        "increasingly_positive",
+        "stable_positive",
+        "mixed",
+        "declining"
+      ],
+      "description": "How audience sentiment is trending"
+    },
+    "overall_health_score": {
+      "type": "number",
+      "description": "0-100 campaign health"
+    },
+    "analyzed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "posts_analyzed": {
+      "type": "number",
+      "description": "How many posts this is based on"
+    }
+  },
+  "required": [
+    "campaign_id",
+    "client_id"
+  ]
+}

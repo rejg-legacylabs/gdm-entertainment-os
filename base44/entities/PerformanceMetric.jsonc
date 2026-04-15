@@ -1,0 +1,200 @@
+{
+  "name": "PerformanceMetric",
+  "type": "object",
+  "properties": {
+    "post_id": {
+      "type": "string",
+      "description": "Associated post"
+    },
+    "campaign_id": {
+      "type": "string",
+      "description": "Campaign"
+    },
+    "campaign_name": {
+      "type": "string"
+    },
+    "client_id": {
+      "type": "string",
+      "description": "Client"
+    },
+    "client_name": {
+      "type": "string"
+    },
+    "brand_id": {
+      "type": "string"
+    },
+    "brand_name": {
+      "type": "string"
+    },
+    "platform": {
+      "type": "string",
+      "enum": [
+        "instagram",
+        "facebook",
+        "linkedin",
+        "tiktok",
+        "youtube",
+        "twitter"
+      ]
+    },
+    "post_type": {
+      "type": "string",
+      "enum": [
+        "caption",
+        "carousel",
+        "reel",
+        "story",
+        "video",
+        "article",
+        "short"
+      ]
+    },
+    "creative_format": {
+      "type": "string",
+      "enum": [
+        "image_ad",
+        "branded_graphic",
+        "text_overlay",
+        "promotional",
+        "event_flyer",
+        "quote_card",
+        "carousel_slide",
+        "reel_cover",
+        "youtube_thumbnail",
+        "social_post"
+      ]
+    },
+    "content_pillar": {
+      "type": "string",
+      "description": "Content theme"
+    },
+    "hook_used": {
+      "type": "string",
+      "description": "Opening hook/teaser"
+    },
+    "cta_used": {
+      "type": "string",
+      "enum": [
+        "learn_more",
+        "shop_now",
+        "sign_up",
+        "download",
+        "contact_us",
+        "visit_website",
+        "share",
+        "comment",
+        "tag_friend",
+        "dm_us",
+        "custom"
+      ]
+    },
+    "publish_hour": {
+      "type": "number",
+      "description": "Hour of day published (0-23)"
+    },
+    "publish_day": {
+      "type": "string",
+      "enum": [
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday",
+        "saturday",
+        "sunday"
+      ]
+    },
+    "impressions": {
+      "type": "number",
+      "default": 0
+    },
+    "reach": {
+      "type": "number",
+      "default": 0
+    },
+    "engagement": {
+      "type": "number",
+      "default": 0
+    },
+    "likes": {
+      "type": "number",
+      "default": 0
+    },
+    "comments": {
+      "type": "number",
+      "default": 0
+    },
+    "shares": {
+      "type": "number",
+      "default": 0
+    },
+    "saves": {
+      "type": "number",
+      "default": 0
+    },
+    "clicks": {
+      "type": "number",
+      "default": 0
+    },
+    "conversions": {
+      "type": "number",
+      "default": 0
+    },
+    "engagement_rate": {
+      "type": "number",
+      "description": "Engagement / impressions"
+    },
+    "click_through_rate": {
+      "type": "number",
+      "description": "Clicks / impressions"
+    },
+    "conversion_rate": {
+      "type": "number",
+      "description": "Conversions / clicks"
+    },
+    "sentiment_score": {
+      "type": "number",
+      "description": "Comment sentiment -1 (negative) to 1 (positive)"
+    },
+    "audience_response": {
+      "type": "string",
+      "enum": [
+        "highly_positive",
+        "positive",
+        "neutral",
+        "negative",
+        "mixed"
+      ]
+    },
+    "was_successful": {
+      "type": "boolean",
+      "description": "Met campaign goals"
+    },
+    "performance_tier": {
+      "type": "string",
+      "enum": [
+        "top_10",
+        "top_25",
+        "above_average",
+        "average",
+        "below_average",
+        "bottom_10"
+      ]
+    },
+    "published_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "data_collected_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When metrics were collected"
+    }
+  },
+  "required": [
+    "post_id",
+    "campaign_id",
+    "platform",
+    "post_type"
+  ]
+}

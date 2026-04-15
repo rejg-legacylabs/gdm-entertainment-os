@@ -1,0 +1,109 @@
+{
+  "name": "ContentLearning",
+  "type": "object",
+  "properties": {
+    "client_id": {
+      "type": "string",
+      "description": "Client this learning applies to"
+    },
+    "client_name": {
+      "type": "string"
+    },
+    "learning_category": {
+      "type": "string",
+      "enum": [
+        "hook_performance",
+        "cta_performance",
+        "post_type_performance",
+        "creative_format_performance",
+        "timing_performance",
+        "content_pillar_performance",
+        "platform_preference",
+        "audience_sentiment"
+      ],
+      "description": "Type of pattern learned"
+    },
+    "dimension": {
+      "type": "string",
+      "description": "What's being measured (e.g., 'Instagram', 'Carousel Posts', 'Question Hook', 'Learn More CTA')"
+    },
+    "platform": {
+      "type": "string",
+      "enum": [
+        "instagram",
+        "facebook",
+        "linkedin",
+        "tiktok",
+        "youtube",
+        "twitter",
+        "cross_platform"
+      ]
+    },
+    "performance_score": {
+      "type": "number",
+      "description": "0-100 score of how well this performs"
+    },
+    "engagement_rate": {
+      "type": "number",
+      "description": "Average engagement rate"
+    },
+    "conversion_rate": {
+      "type": "number",
+      "description": "Average conversion rate"
+    },
+    "sample_count": {
+      "type": "number",
+      "description": "How many data points this is based on"
+    },
+    "trend": {
+      "type": "string",
+      "enum": [
+        "improving",
+        "stable",
+        "declining"
+      ],
+      "description": "Is performance trending up/down"
+    },
+    "recommendation_text": {
+      "type": "string",
+      "description": "Human-readable recommendation"
+    },
+    "best_practices": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "What works with this dimension"
+    },
+    "avoid_patterns": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "What to avoid"
+    },
+    "confidence_level": {
+      "type": "string",
+      "enum": [
+        "high",
+        "medium",
+        "low"
+      ],
+      "description": "How confident is this recommendation"
+    },
+    "last_updated": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "last_analyzed_count": {
+      "type": "number",
+      "description": "Posts analyzed to generate this"
+    }
+  },
+  "required": [
+    "client_id",
+    "learning_category",
+    "dimension",
+    "performance_score"
+  ]
+}
