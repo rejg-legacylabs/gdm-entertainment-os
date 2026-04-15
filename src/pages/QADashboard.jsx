@@ -191,6 +191,18 @@ export default function QADashboard() {
     },
   });
 
+  const validateProposalInvoice = useMutation({
+    mutationFn: async (proposalId) => {
+      const response = await base44.functions.invoke('validateProposalInvoiceConversion', {
+        proposalId,
+      });
+      return response.data;
+    },
+    onSuccess: (result) => {
+      queryClient.invalidateQueries({ queryKey: ['validationTests'] });
+    },
+  });
+
   const getScenarioStatus = (scenarioName) => {
     const test = validationTests.find(t => t.scenario_name === scenarioName);
     return test?.status || 'pending';
@@ -451,6 +463,48 @@ export default function QADashboard() {
                         </div>
                       )}
 
+                      {/* Validation Results for Invoice Conversion */}
+                      {scenario.name === 'invoice_conversion' && validateProposalInvoice.data && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="pt-3 border-t border-border/30 space-y-3"
+                        >
+                          <p className="text-sm font-semibold text-foreground">Validation Results</p>
+                          <div className={`p-3 rounded-lg ${
+                            validateProposalInvoice.data.pass_count === validateProposalInvoice.data.total_tests
+                              ? 'bg-emerald-500/10 border border-emerald-500/30'
+                              : 'bg-red-500/10 border border-red-500/30'
+                          }`}>
+                            <p className="text-sm font-medium mb-2">
+                              {validateProposalInvoice.data.pass_count}/{validateProposalInvoice.data.total_tests} Tests Passed
+                            </p>
+                            <div className="space-y-2">
+                              {Object.entries(validateProposalInvoice.data.tests).map(([key, test]) => (
+                                <div key={key} className="flex items-start gap-2 text-xs">
+                                  {test.passed ? (
+                                    <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                                  ) : (
+                                    <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
+                                  )}
+                                  <div>
+                                    <p className={`font-medium ${test.passed ? 'text-emerald-400' : 'text-red-400'}`}>
+                                      {test.name}
+                                    </p>
+                                    <p className="text-muted-foreground mt-0.5">
+                                      Expected: {test.expected}
+                                    </p>
+                                    <p className="text-muted-foreground">
+                                      Actual: {test.actual}
+                                    </p>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+
                       {/* Last Run Info */}
                       {test?.last_run_date && (
                         <div className="text-xs text-muted-foreground pt-3 border-t border-border/30">
@@ -468,6 +522,22 @@ export default function QADashboard() {
                           <Play className="w-4 h-4" />
                           {testStatus === 'running' ? 'Running...' : 'Run Test'}
                         </Button>
+                        {scenario.name === 'invoice_conversion' && (
+                          <Button
+                            onClick={() => {
+                              const proposal = proposals.find(p => p.proposal_number === 'PROP-001' && p.status === 'approved');
+                              if (proposal) {
+                                validateProposalInvoice.mutate(proposal.id);
+                              }
+                            }}
+                            disabled={validateProposalInvoice.isPending}
+                            variant="outline"
+                            className="gap-2"
+                          >
+                            <CheckCircle2 className="w-4 h-4" />
+                            Validate Conversion
+                          </Button>
+                        )}
                       </div>
                     </div>
                   </motion.div>
