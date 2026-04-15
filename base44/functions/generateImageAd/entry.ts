@@ -11,10 +11,12 @@ Deno.serve(async (req) => {
 
     const {
       campaignId,
+      campaignName,
+      brandId,
+      brandName,
       creativeType,
       format,
       platform,
-      brandName,
       objective,
       cta,
       audience,
@@ -81,13 +83,37 @@ Deno.serve(async (req) => {
       },
     });
 
+    // Create and persist GeneratedCreative record
+    const savedCreative = await base44.entities.GeneratedCreative.create({
+      campaign_id: campaignId,
+      campaign_name: campaignName,
+      brand_id: brandId,
+      brand_name: brandName,
+      creative_type: creativeType,
+      format,
+      platform,
+      image_url: imageUrl,
+      image_prompt: imagePrompt,
+      headline: textResult.headline,
+      subheadline: textResult.subheadline,
+      cta_line: textResult.cta_line,
+      caption: textResult.caption,
+      short_caption: textResult.short_caption,
+      long_caption: textResult.long_caption,
+      hashtag_suggestions: textResult.hashtag_suggestions,
+      text_overlay: textResult.text_overlay,
+      approval_status: 'draft',
+      ready_to_publish: false,
+      source_material: {
+        source_type: sourceUrl ? 'url' : 'campaign_brief',
+        source_url: sourceUrl,
+        summary: sourceMaterial,
+      },
+    });
+
     return Response.json({
       success: true,
-      creative: {
-        image_url: imageUrl,
-        image_prompt: imagePrompt,
-        ...textResult,
-      },
+      creative: savedCreative,
     });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });

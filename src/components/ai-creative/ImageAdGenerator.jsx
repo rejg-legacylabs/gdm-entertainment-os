@@ -12,12 +12,14 @@ export default function ImageAdGenerator({ campaign, brand, onCreativeGenerated 
   const [selectedPlatform, setSelectedPlatform] = useState('instagram');
   const [selectedStyle, setSelectedStyle] = useState('premium');
   const [showPreview, setShowPreview] = useState(false);
+  const [generatedCreative, setGeneratedCreative] = useState(null);
 
   const generateImage = useMutation({
     mutationFn: async () => {
       const response = await base44.functions.invoke('generateImageAd', {
         campaignId: campaign.id,
         campaignName: campaign.name,
+        brandId: brand.id,
         brandName: brand.name,
         creativeType: 'image_ad',
         format: selectedFormat,
@@ -31,12 +33,19 @@ export default function ImageAdGenerator({ campaign, brand, onCreativeGenerated 
       return response.data;
     },
     onSuccess: (data) => {
-      toast.success('Creative generated successfully!');
-      onCreativeGenerated?.(data.creative);
-      queryClient.invalidateQueries({ queryKey: ['generatedCreatives'] });
+      if (data.creative && data.creative.id) {
+        setGeneratedCreative(data.creative);
+        toast.success('Creative generated and saved!');
+        onCreativeGenerated?.(data.creative);
+        queryClient.invalidateQueries({ queryKey: ['generatedCreatives', campaign.id] });
+        setShowPreview(true);
+      } else {
+        toast.error('Generation completed but failed to save');
+      }
     },
     onError: (error) => {
       toast.error('Failed to generate creative: ' + error.message);
+      setGeneratedCreative(null);
     },
   });
 
@@ -143,27 +152,57 @@ export default function ImageAdGenerator({ campaign, brand, onCreativeGenerated 
       </div>
 
       {/* Preview */}
-      {generateImage.data && showPreview && (
+      {showPreview && (
         <motion.div
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: 'auto' }}
           className="border-t border-border/30 pt-4 space-y-4"
         >
-          <img
-            src={generateImage.data.image_url}
-            alt="Generated creative"
-            className="w-full rounded-lg"
-          />
-          <div className="space-y-2">
-            <p className="text-xs text-muted-foreground">Headline:</p>
-            <p className="text-sm font-medium text-foreground">
-              {generateImage.data.headline}
-            </p>
-            <p className="text-xs text-muted-foreground mt-3">Caption:</p>
-            <p className="text-sm text-foreground">
-              {generateImage.data.caption}
-            </p>
-          </div>
+          {generatedCreative ? (
+            <>
+              <img
+                src={generatedCreative.image_url}
+                alt="Generated creative"
+                className="w-full rounded-lg"
+              />
+              <div className="space-y-3 p-4 bg-secondary/20 rounded-lg">
+                {generatedCreative.headline && (
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">Headline</p>
+                    <p className="text-sm font-medium text-foreground">{generatedCreative.headline}</p>
+                  </div>
+                )}
+                {generatedCreative.caption && (
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">Caption</p>
+                    <p className="text-sm text-foreground">{generatedCreative.caption}</p>
+                  </div>
+                )}
+                {generatedCreative.cta_line && (
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">CTA</p>
+                    <p className="text-sm font-medium text-primary">{generatedCreative.cta_line}</p>
+                  </div>
+                )}
+                {generatedCreative.hashtag_suggestions?.length > 0 && (
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-2">Hashtags</p>
+                    <div className="flex flex-wrap gap-2">
+                      {generatedCreative.hashtag_suggestions.map((tag, idx) => (
+                        <span key={idx} className="text-xs px-2 py-1 rounded-full bg-primary/10 text-primary">
+                          #{tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </>
+          ) : (
+            <div className="p-8 text-center border-2 border-dashed border-border/30 rounded-lg">
+              <p className="text-sm text-muted-foreground">No creative generated yet</p>
+            </div>
+          )}
         </motion.div>
       )}
 
@@ -186,14 +225,26 @@ export default function ImageAdGenerator({ campaign, brand, onCreativeGenerated 
             </>
           )}
         </Button>
-        {generateImage.data && (
+        <Button
+          onClick={() => setShowPreview(!showPreview)}
+          variant="outline"
+          className="gap-2"
+          disabled={!generatedCreative}
+        >
+          <Eye className="w-4 h-4" />
+          {showPreview ? 'Hide' : 'Preview'}
+        </Button>
+        {generatedCreative && (
           <Button
-            onClick={() => setShowPreview(!showPreview)}
+            onClick={() => {
+              onCreativeGenerated?.(generatedCreative);
+              toast.success('Creative added to campaign');
+            }}
             variant="outline"
             className="gap-2"
           >
-            <Eye className="w-4 h-4" />
-            Preview
+            <Download className="w-4 h-4" />
+            Use
           </Button>
         )}
       </div>

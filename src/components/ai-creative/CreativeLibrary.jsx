@@ -1,17 +1,31 @@
 import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
-import { Grid3x3, Star, Download, Eye } from 'lucide-react';
+import { Grid3x3, Star, Download, Eye, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
-export default function CreativeLibrary({ campaignId }) {
+export default function CreativeLibrary({ campaignId, onUseCreative }) {
+  const queryClient = useQueryClient();
   const [selectedCreative, setSelectedCreative] = useState(null);
 
   const { data: creatives = [] } = useQuery({
     queryKey: ['generatedCreatives', campaignId],
     queryFn: () =>
       base44.entities.GeneratedCreative.filter({ campaign_id: campaignId }),
+  });
+
+  const markFavorite = useMutation({
+    mutationFn: async (creativeId) => {
+      const creative = creatives.find(c => c.id === creativeId);
+      return await base44.entities.GeneratedCreative.update(creativeId, {
+        is_favorite: !creative.is_favorite,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['generatedCreatives', campaignId] });
+    },
   });
 
   const favorites = creatives.filter((c) => c.is_favorite);
@@ -44,6 +58,7 @@ export default function CreativeLibrary({ campaignId }) {
                 key={creative.id}
                 creative={creative}
                 onSelect={setSelectedCreative}
+                onFavorite={() => markFavorite.mutate(creative.id)}
               />
             ))}
           </div>
@@ -62,6 +77,7 @@ export default function CreativeLibrary({ campaignId }) {
                 key={creative.id}
                 creative={creative}
                 onSelect={setSelectedCreative}
+                onFavorite={() => markFavorite.mutate(creative.id)}
               />
             ))}
           </div>
@@ -80,6 +96,7 @@ export default function CreativeLibrary({ campaignId }) {
                 key={creative.id}
                 creative={creative}
                 onSelect={setSelectedCreative}
+                onFavorite={() => markFavorite.mutate(creative.id)}
               />
             ))}
           </div>
@@ -169,7 +186,21 @@ export default function CreativeLibrary({ campaignId }) {
                 >
                   Close
                 </Button>
-                <Button className="flex-1 bg-primary gap-2">
+                <Button
+                  onClick={() => markFavorite.mutate(selectedCreative.id)}
+                  variant="outline"
+                  className="gap-2"
+                >
+                  <Star className={`w-4 h-4 ${selectedCreative.is_favorite ? 'fill-primary text-primary' : ''}`} />
+                </Button>
+                <Button
+                  onClick={() => {
+                    onUseCreative?.(selectedCreative);
+                    setSelectedCreative(null);
+                    toast.success('Creative added to campaign');
+                  }}
+                  className="flex-1 bg-primary gap-2"
+                >
                   <Download className="w-4 h-4" />
                   Use This Creative
                 </Button>
@@ -182,14 +213,16 @@ export default function CreativeLibrary({ campaignId }) {
   );
 }
 
-function CreativeCard({ creative, onSelect }) {
+function CreativeCard({ creative, onSelect, onFavorite }) {
   return (
-    <motion.button
+    <motion.div
       whileHover={{ y: -4 }}
-      onClick={() => onSelect(creative)}
-      className="group rounded-lg overflow-hidden border border-border/30 hover:border-primary/50 transition-all"
+      className="rounded-lg overflow-hidden border border-border/30 hover:border-primary/50 transition-all"
     >
-      <div className="relative h-40 overflow-hidden bg-secondary/30">
+      <button
+        onClick={() => onSelect(creative)}
+        className="group relative h-40 overflow-hidden bg-secondary/30 w-full"
+      >
         <img
           src={creative.image_url}
           alt={creative.creative_type}
@@ -198,7 +231,7 @@ function CreativeCard({ creative, onSelect }) {
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
           <Eye className="w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
         </div>
-      </div>
+      </button>
       <div className="p-3 bg-secondary/20 space-y-2">
         <p className="text-xs font-medium text-foreground capitalize">
           {creative.creative_type.replace('_', ' ')}
@@ -213,11 +246,17 @@ function CreativeCard({ creative, onSelect }) {
           >
             {creative.approval_status}
           </span>
-          {creative.is_favorite && (
-            <Star className="w-3 h-3 fill-primary text-primary" />
-          )}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onFavorite?.(creative.id);
+            }}
+            className="text-muted-foreground hover:text-primary transition-colors"
+          >
+            <Star className={`w-3 h-3 ${creative.is_favorite ? 'fill-primary text-primary' : ''}`} />
+          </button>
         </div>
       </div>
-    </motion.button>
+    </motion.div>
   );
 }
