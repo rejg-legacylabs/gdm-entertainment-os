@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
-import { FileText, Send, DollarSign, Calendar, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { FileText, Send, DollarSign, Calendar, AlertCircle, CheckCircle2, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -198,6 +198,40 @@ export default function ProposalPreview({ proposal, onSend, onConvertToInvoice, 
         </div>
       </div>
 
+      {/* Linked Invoice Details */}
+      {isInvoiceCreated && linkedInvoice && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="glass-panel rounded-xl p-6 border border-emerald-500/30 bg-emerald-500/5"
+        >
+          <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+            <DollarSign className="w-4 h-4 text-emerald-400" />
+            Associated Invoice
+          </h3>
+          <div className="grid sm:grid-cols-3 gap-4">
+            <div>
+              <p className="text-xs text-muted-foreground mb-1">Invoice Number</p>
+              <p className="text-sm font-bold text-emerald-400">{linkedInvoice.invoice_number}</p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground mb-1">Total Amount</p>
+              <p className="text-sm font-bold text-foreground">${linkedInvoice.total_amount?.toLocaleString()}</p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground mb-1">Status</p>
+              <p className={`text-sm font-medium ${
+                linkedInvoice.payment_status === 'paid' ? 'text-emerald-400' :
+                linkedInvoice.payment_status === 'partially_paid' ? 'text-amber-400' :
+                'text-muted-foreground'
+              }`}>
+                {linkedInvoice.payment_status}
+              </p>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
       {/* Actions */}
       <div className="flex gap-3">
         {proposal.status === 'draft' && (
@@ -211,11 +245,14 @@ export default function ProposalPreview({ proposal, onSend, onConvertToInvoice, 
         )}
         {isInvoiceCreated && linkedInvoice ? (
           <Button
-            disabled
-            className="flex-1 bg-emerald-600 gap-2"
+            className="flex-1 bg-emerald-600 hover:bg-emerald-700 gap-2"
+            onClick={() => {
+              // Navigate to invoice or open in new tab
+              window.open(`/invoice-center?id=${linkedInvoice.id}`, '_blank');
+            }}
           >
-            <CheckCircle2 className="w-4 h-4" />
-            Invoice {linkedInvoice.invoice_number} Created
+            <Eye className="w-4 h-4" />
+            View Invoice
           </Button>
         ) : proposal.status === 'approved' ? (
           <Button
