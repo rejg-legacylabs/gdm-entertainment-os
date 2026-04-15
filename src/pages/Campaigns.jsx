@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
-import { Megaphone, Plus, Search, Filter, Sparkles } from 'lucide-react';
+import { Megaphone, Plus, Search, Filter, Sparkles, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -13,6 +13,7 @@ import BrandBadge from '@/components/ui-premium/BrandBadge';
 import StatusBadge from '@/components/ui-premium/StatusBadge';
 import ScoreRing from '@/components/ui-premium/ScoreRing';
 import AIInsightPanel from '@/components/ui-premium/AIInsightPanel';
+import CampaignWizard from '@/components/campaign-wizard/CampaignWizard';
 
 const campaignTypes = ['donor', 'fundraising', 'awareness', 'recruiting', 'hiring', 'event', 'storytelling', 'nonprofit_outreach', 'transitional_housing', 'community_engagement', 'brand_growth'];
 
@@ -21,6 +22,7 @@ export default function Campaigns() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [showCreate, setShowCreate] = useState(false);
+  const [showWizard, setShowWizard] = useState(false);
   const [newCampaign, setNewCampaign] = useState({ name: '', brand_name: '', type: '', objective: '', target_audience: '', status: 'draft' });
 
   const { data: campaigns = [] } = useQuery({
@@ -42,6 +44,19 @@ export default function Campaigns() {
     },
   });
 
+  const handleWizardComplete = (campaignData) => {
+    createMutation.mutate({
+      name: campaignData.basics.name,
+      brand_name: campaignData.basics.brand,
+      type: 'storytelling',
+      objective: campaignData.basics.objective,
+      start_date: campaignData.basics.startDate,
+      status: 'active',
+      content_frequency: campaignData.basics.frequency,
+    });
+    setShowWizard(false);
+  };
+
   const filtered = campaigns.filter(c => {
     const matchSearch = !search || c.name.toLowerCase().includes(search.toLowerCase());
     const matchStatus = statusFilter === 'all' || c.status === statusFilter;
@@ -53,6 +68,10 @@ export default function Campaigns() {
     { title: 'GDM needs an event campaign', description: 'Upcoming events lack social coverage. Create a pre/during/post event content series.', category: 'content', priority: 'high' },
     { title: '2 campaigns ending this week', description: 'Review results and plan follow-up campaigns to maintain momentum.', category: 'strategy', priority: 'medium' },
   ];
+
+  if (showWizard) {
+    return <CampaignWizard onComplete={handleWizardComplete} onCancel={() => setShowWizard(false)} />;
+  }
 
   return (
     <div className="p-6 lg:p-8 max-w-[1600px] mx-auto">
@@ -84,12 +103,16 @@ export default function Campaigns() {
                 <SelectItem value="completed">Completed</SelectItem>
               </SelectContent>
             </Select>
+            <Button onClick={() => setShowWizard(true)} className="bg-gradient-to-r from-primary to-accent text-primary-foreground hover:from-primary/90 hover:to-accent/90 gap-2">
+              <Zap className="w-4 h-4" />
+              Campaign Autopilot
+            </Button>
             <Dialog open={showCreate} onOpenChange={setShowCreate}>
-              <DialogTrigger asChild>
-                <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
-                  <Plus className="w-4 h-4 mr-2" /> New Campaign
-                </Button>
-              </DialogTrigger>
+               <DialogTrigger asChild>
+                 <Button variant="outline" className="gap-2">
+                   <Plus className="w-4 h-4" /> Quick Campaign
+                 </Button>
+               </DialogTrigger>
               <DialogContent className="bg-card border-border max-w-lg">
                 <DialogHeader>
                   <DialogTitle className="text-foreground">Create Campaign</DialogTitle>

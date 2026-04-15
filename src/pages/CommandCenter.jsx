@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
@@ -11,6 +11,7 @@ import SectionHeader from '@/components/ui-premium/SectionHeader';
 import BrandOverviewRow from '@/components/command-center/BrandOverviewRow';
 import TopPerformingPosts from '@/components/command-center/TopPerformingPosts';
 import EngagementChart from '@/components/command-center/EngagementChart';
+import PremiumWelcome from '@/components/ui-premium/PremiumWelcome';
 
 const aiInsights = [
   { title: 'GDM Entertainment needs 3 more posts this week', description: 'The posting cadence for GDM is below target. Schedule 3 Instagram reels to maintain momentum.', category: 'content', priority: 'high' },
@@ -21,6 +22,7 @@ const aiInsights = [
 ];
 
 export default function CommandCenter() {
+  const [showWelcome, setShowWelcome] = React.useState(localStorage.getItem('gdmWelcomeSeen') ? false : true);
   const { data: brands = [] } = useQuery({
     queryKey: ['brands'],
     queryFn: () => base44.entities.Brand.list(),
@@ -46,8 +48,15 @@ export default function CommandCenter() {
   const totalEngagement = posts.reduce((sum, p) => sum + (p.engagement || 0), 0);
   const pendingInbox = inboxItems.filter(i => i.status === 'new').length;
 
+  const handleWelcomeDismiss = () => {
+    setShowWelcome(false);
+    localStorage.setItem('gdmWelcomeSeen', 'true');
+  };
+
   return (
-    <div className="p-6 lg:p-8 max-w-[1600px] mx-auto">
+    <>
+      {showWelcome && <PremiumWelcome onDismiss={handleWelcomeDismiss} />}
+      <div className="p-6 lg:p-8 max-w-[1600px] mx-auto">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -108,6 +117,7 @@ export default function CommandCenter() {
 
       {/* Top Content */}
       <TopPerformingPosts posts={posts} />
-    </div>
+      </div>
+    </>
   );
 }
