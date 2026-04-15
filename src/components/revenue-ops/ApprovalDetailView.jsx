@@ -15,6 +15,11 @@ export default function ApprovalDetailView({ approval, onBack }) {
   const [showChangeRequest, setShowChangeRequest] = useState(false);
   const [changeReason, setChangeReason] = useState('');
   const [isUpdating, setIsUpdating] = useState(false);
+  
+  // Normalize approval state to ensure consistency
+  const { normalized: normalizedApproval } = normalizeApprovalState(approval);
+  const statusLabel = getApprovalStatusLabel(normalizedApproval);
+  const timeline = buildApprovalTimeline(normalizedApproval);
 
   const { data: proposal } = useQuery({
     queryKey: ['proposal', approval.proposal_id],
