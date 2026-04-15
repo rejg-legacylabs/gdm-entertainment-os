@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard, Building2, Megaphone, PenTool, Video, Calendar,
   Inbox, BarChart3, FolderOpen, Brain, Settings, ChevronLeft, ChevronRight,
-  Sparkles, Crown, DollarSign, FileText, Lock
+  Sparkles, Crown, DollarSign, FileText, Lock, Zap
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -26,6 +26,7 @@ const revenueOpsItems = [
   { path: '/proposal-studio', icon: FileText, label: 'Proposal Studio' },
   { path: '/invoice-center', icon: BarChart3, label: 'Invoice Center' },
   { path: '/launch-gate', icon: Lock, label: 'Launch Gate' },
+  { path: '/qa-dashboard', icon: Zap, label: 'QA & Validation' },
 ];
 
 const allNavItems = [...navItems, ...revenueOpsItems, { path: '/settings', icon: Settings, label: 'Settings' }];

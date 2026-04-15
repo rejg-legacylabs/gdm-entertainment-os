@@ -24,9 +24,16 @@ import ProposalStudio from '@/pages/ProposalStudio';
 import InvoiceCenter from '@/pages/InvoiceCenter';
 import LaunchGateCenter from '@/pages/LaunchGateCenter';
 import ClientDashboard from '@/pages/ClientDashboard';
+import QADashboard from '@/pages/QADashboard';
+import { initializeDemoData } from '@/lib/demoDataGenerator';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
+
+  // Initialize demo data on mount
+  React.useEffect(() => {
+    initializeDemoData();
+  }, []);
 
   if (isLoadingPublicSettings || isLoadingAuth) {
     return (
@@ -68,6 +75,7 @@ const AuthenticatedApp = () => {
         <Route path="/invoice-center" element={<InvoiceCenter />} />
         <Route path="/launch-gate" element={<LaunchGateCenter />} />
         <Route path="/client-dashboard" element={<ClientDashboard />} />
+        <Route path="/qa-dashboard" element={<QADashboard />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>

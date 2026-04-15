@@ -1,0 +1,111 @@
+{
+  "name": "ValidationTest",
+  "type": "object",
+  "properties": {
+    "scenario_name": {
+      "type": "string",
+      "enum": [
+        "monthly_package",
+        "custom_campaign",
+        "payment_gate_blocking",
+        "client_isolation",
+        "approval_flow",
+        "package_features",
+        "data_consistency"
+      ],
+      "description": "Test scenario type"
+    },
+    "scenario_label": {
+      "type": "string",
+      "description": "Display label for scenario"
+    },
+    "description": {
+      "type": "string",
+      "description": "Scenario description"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "running",
+        "passed",
+        "failed",
+        "blocked"
+      ],
+      "default": "pending",
+      "description": "Test status"
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "step_name": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "passed",
+              "failed"
+            ]
+          },
+          "expected": {
+            "type": "string"
+          },
+          "actual": {
+            "type": "string"
+          },
+          "error": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Test steps and results"
+    },
+    "related_client_id": {
+      "type": "string",
+      "description": "Primary test client"
+    },
+    "related_campaign_id": {
+      "type": "string",
+      "description": "Primary test campaign"
+    },
+    "related_proposal_id": {
+      "type": "string",
+      "description": "Primary test proposal"
+    },
+    "related_invoice_id": {
+      "type": "string",
+      "description": "Primary test invoice"
+    },
+    "pass_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of passed steps"
+    },
+    "fail_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of failed steps"
+    },
+    "blocked_reason": {
+      "type": "string",
+      "description": "Reason if blocked"
+    },
+    "last_run_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When test was last run"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Test notes"
+    }
+  },
+  "required": [
+    "scenario_name",
+    "scenario_label"
+  ]
+}
