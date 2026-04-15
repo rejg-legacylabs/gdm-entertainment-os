@@ -2,37 +2,40 @@
   "name": "ValidationTest",
   "type": "object",
   "properties": {
-    "scenario_name": {
+    "scenario_id": {
       "type": "string",
       "enum": [
-        "monthly_package",
-        "custom_campaign",
-        "payment_gate_blocking",
-        "client_isolation",
-        "approval_flow",
-        "package_features",
-        "data_consistency"
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "G",
+        "H",
+        "I",
+        "J"
       ],
-      "description": "Test scenario type"
+      "description": "Test scenario (A-J)"
     },
-    "scenario_label": {
+    "scenario_name": {
       "type": "string",
-      "description": "Display label for scenario"
+      "description": "Test name"
     },
     "description": {
       "type": "string",
-      "description": "Scenario description"
+      "description": "What this test validates"
     },
     "status": {
       "type": "string",
       "enum": [
-        "pending",
+        "not_run",
         "running",
         "passed",
         "failed",
-        "blocked"
+        "incomplete"
       ],
-      "default": "pending",
+      "default": "not_run",
       "description": "Test status"
     },
     "steps": {
@@ -40,72 +43,109 @@
       "items": {
         "type": "object",
         "properties": {
+          "step_number": {
+            "type": "number"
+          },
           "step_name": {
+            "type": "string"
+          },
+          "step_description": {
             "type": "string"
           },
           "status": {
             "type": "string",
             "enum": [
               "pending",
+              "running",
               "passed",
-              "failed"
+              "failed",
+              "skipped"
             ]
           },
-          "expected": {
+          "result_message": {
             "type": "string"
           },
-          "actual": {
-            "type": "string"
+          "created_record_id": {
+            "type": "string",
+            "description": "ID of entity created in this step"
           },
-          "error": {
-            "type": "string"
+          "created_record_type": {
+            "type": "string",
+            "description": "Type of entity created"
+          },
+          "executed_at": {
+            "type": "string",
+            "format": "date-time"
           }
         }
       },
-      "description": "Test steps and results"
+      "description": "Steps in this test"
     },
-    "related_client_id": {
-      "type": "string",
-      "description": "Primary test client"
+    "test_data": {
+      "type": "object",
+      "properties": {
+        "client_id": {
+          "type": "string"
+        },
+        "campaign_id": {
+          "type": "string"
+        },
+        "proposal_id": {
+          "type": "string"
+        },
+        "invoice_id": {
+          "type": "string"
+        },
+        "connected_account_id": {
+          "type": "string"
+        },
+        "post_id": {
+          "type": "string"
+        },
+        "comment_id": {
+          "type": "string"
+        }
+      },
+      "description": "IDs of records created during test"
     },
-    "related_campaign_id": {
-      "type": "string",
-      "description": "Primary test campaign"
-    },
-    "related_proposal_id": {
-      "type": "string",
-      "description": "Primary test proposal"
-    },
-    "related_invoice_id": {
-      "type": "string",
-      "description": "Primary test invoice"
-    },
-    "pass_count": {
+    "validations_passed": {
       "type": "number",
-      "default": 0,
-      "description": "Number of passed steps"
+      "default": 0
     },
-    "fail_count": {
+    "validations_failed": {
       "type": "number",
-      "default": 0,
-      "description": "Number of failed steps"
+      "default": 0
     },
-    "blocked_reason": {
-      "type": "string",
-      "description": "Reason if blocked"
+    "error_log": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Errors encountered"
     },
-    "last_run_date": {
+    "started_at": {
       "type": "string",
-      "format": "date-time",
-      "description": "When test was last run"
+      "format": "date-time"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "duration_ms": {
+      "type": "number",
+      "description": "How long test took"
+    },
+    "run_by": {
+      "type": "string",
+      "description": "User who ran the test"
     },
     "notes": {
-      "type": "string",
-      "description": "Test notes"
+      "type": "string"
     }
   },
   "required": [
+    "scenario_id",
     "scenario_name",
-    "scenario_label"
+    "status"
   ]
 }

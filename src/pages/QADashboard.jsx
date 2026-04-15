@@ -10,114 +10,163 @@ import { cn } from '@/lib/utils';
 
 const scenarioDefinitions = [
   {
-    name: 'monthly_package',
-    label: 'Scenario A: Monthly Package Workflow',
-    description: 'Create client → assign package → calculate pricing → generate proposal → approve → invoice → pay → launch',
+    id: 'A',
+    name: 'onboarding_completion',
+    label: 'Scenario A: Client Onboarding Completion',
+    description: 'Create client → complete onboarding checklist → assign package → connect accounts → confirm ready',
     steps: [
-      'Client Created',
-      'Package Assigned',
-      'Pricing Scope Calculated',
-      'Proposal Generated',
-      'Proposal Approved',
-      'Invoice Created',
-      'Invoice Paid',
-      'Launch Gate Clears',
+      'Create Client',
+      'Start Onboarding Session',
+      'Complete Brand Info',
+      'Connect Social Accounts',
+      'Upload Assets',
+      'Assign Package',
+      'Mark All Checklist Items Complete',
+      'Confirm Client Ready for Campaigns',
     ],
   },
   {
-    name: 'custom_campaign',
-    label: 'Scenario B: One-Time Custom Campaign',
-    description: 'Custom scope → pricing → proposal → approval → invoice → payment → launch unlock',
+    id: 'B',
+    name: 'pricing_proposal_invoice',
+    label: 'Scenario B: Pricing to Proposal to Invoice Flow',
+    description: 'Build pricing scope → generate proposal → approve → convert to invoice → confirm linking',
     steps: [
-      'Custom Scope Created',
-      'Multi-Platform Content Mix Set',
-      'Pricing Calculated',
-      'Proposal Generated',
-      'Change Request Sent',
-      'Proposal Revised',
-      'Proposal Approved',
-      'Invoice Created',
-      'Invoice Paid',
-      'Campaign Unlocked',
+      'Create Pricing Scope',
+      'Calculate Pricing',
+      'Generate Proposal',
+      'Send to Client',
+      'Client Approves Proposal',
+      'Verify Approval Data',
+      'Convert to Invoice',
+      'Confirm Invoice Links to Proposal',
     ],
   },
   {
+    id: 'C',
     name: 'payment_gate_blocking',
-    label: 'Scenario C: Payment Gate Blocking',
-    description: 'Verify unpaid invoices block campaign launch',
+    label: 'Scenario C: Payment-Gated Launch Blocking',
+    description: 'Create unpaid invoice → confirm campaign blocked → mark paid → confirm launch unblocks',
     steps: [
-      'Proposal Approved',
-      'Invoice Created',
-      'Payment Status: Unpaid',
-      'Launch Gate: Blocked',
-      'Campaign Cannot Activate',
-      'Payment Received',
-      'Launch Gate: Clears',
+      'Create Campaign',
+      'Create Unpaid Invoice',
+      'Attempt Campaign Launch',
+      'Confirm Launch Blocked',
+      'Verify Blocker Reason Visible',
+      'Mark Invoice Paid',
+      'Retry Campaign Launch',
+      'Confirm Launch Now Works',
     ],
   },
   {
-    name: 'invoice_conversion',
-    label: 'Scenario D: Proposal to Invoice Conversion',
-    description: 'Verify eligible proposals convert to invoices with correct data',
+    id: 'D',
+    name: 'social_account_health',
+    label: 'Scenario D: Social Account Connection Health',
+    description: 'Connect account → verify healthy → simulate token expiry → confirm reconnect warning',
     steps: [
-      'Proposal Created and Approved',
-      'Client Approval Received',
-      'Conversion Eligibility Checked',
-      'Invoice Created from Proposal',
-      'Invoice Number Generated',
-      'Totals Match Proposal',
-      'Launch Gate Updated',
-      'Proposal Status: Invoice Created',
+      'Connect Social Account',
+      'Check Account Health Score',
+      'Verify All Sync Status Green',
+      'Simulate Token Expiry',
+      'Confirm Expiration Alert',
+      'Show Reconnect Warning',
+      'Refresh Token',
+      'Verify Health Restored',
     ],
   },
   {
-    name: 'client_isolation',
-    label: 'Scenario E: Client Isolation & Permissions',
-    description: 'Verify data isolation and permission boundaries',
+    id: 'E',
+    name: 'ai_creative_generation',
+    label: 'Scenario E: AI Creative Generation',
+    description: 'Generate image ad from video/transcript → create caption → create post → send for approval',
     steps: [
-      'Multiple Clients Created',
-      'Client 1 Dashboard Shows Only Own Data',
-      'Client 2 Cannot See Client 1 Records',
+      'Select Campaign',
+      'Choose Creative Source (Video/Transcript/URL)',
+      'Generate Image Ad',
+      'Generate Caption',
+      'Generate Hashtags',
+      'Create Draft Post',
+      'Send for Approval',
+      'Verify Approval Workflow',
+    ],
+  },
+  {
+    id: 'F',
+    name: 'publishing_workflow',
+    label: 'Scenario F: Publishing Workflow',
+    description: 'Approved post → publish to account → confirm status → test failure handling',
+    steps: [
+      'Create Approved Post',
+      'Verify Ready to Publish',
+      'Execute Publish Action',
+      'Confirm Publishing Status Updated',
+      'Create Publishing Log Entry',
+      'Simulate Publish Failure',
+      'Verify Failure Log Created',
+      'Confirm Retry Queue Available',
+    ],
+  },
+  {
+    id: 'G',
+    name: 'comment_ops_safety',
+    label: 'Scenario G: Comment Ops Safety',
+    description: 'Ingest comments → classify sentiment → generate replies → verify safety checks',
+    steps: [
+      'Ingest Test Comments',
+      'Classify Comment Type',
+      'Analyze Sentiment',
+      'Flag Sensitive Comments',
+      'Generate Reply Suggestions',
+      'Verify Risky Comments Need Approval',
+      'Approve Safe Reply',
+      'Send Reply to Platform',
+    ],
+  },
+  {
+    id: 'H',
+    name: 'client_permissions_isolation',
+    label: 'Scenario H: Client Permissions Isolation',
+    description: 'Create users → verify data isolation → confirm role-based access control',
+    steps: [
+      'Create Multiple Test Clients',
+      'Create Manager User',
+      'Create Super Admin User',
+      'Client Only Sees Own Content',
       'Manager Only Sees Assigned Clients',
-      'Super Admin Sees All Records',
+      'Super Admin Sees All Data',
+      'Test Cross-Client Data Blocked',
+      'Verify Admin Override Works',
     ],
   },
   {
-    name: 'approval_flow',
-    label: 'Scenario F: Client Approval Flow',
-    description: 'Test proposal approval and status propagation',
+    id: 'I',
+    name: 'content_performance_learning',
+    label: 'Scenario I: Content Performance Learning',
+    description: 'Create posts with metrics → analyze patterns → generate recommendations',
     steps: [
-      'Campaign Created',
-      'Proposal Generated',
-      'Sent to Client',
-      'Client Reviews',
-      'Client Approves',
-      'Approval Status Updates',
-      'Invoice Eligibility Confirmed',
+      'Create Campaign',
+      'Create Multiple Posts',
+      'Log Performance Metrics',
+      'Analyze Post Performance',
+      'Identify Top Performers',
+      'Generate AI Recommendations',
+      'Show "What Worked" Insights',
+      'Verify Recommendation Panel Updates',
     ],
   },
   {
-    name: 'package_features',
-    label: 'Scenario G: Package Feature Toggles',
-    description: 'Verify feature toggles affect visibility and pricing',
+    id: 'J',
+    name: 'audit_and_hardening',
+    label: 'Scenario J: Audit and Hardening',
+    description: 'Verify approval locks → audit history → override logging → duplicate prevention',
     steps: [
-      'Package Created with Features',
-      'Feature Disabled for Client',
-      'Client Dashboard Reflects Change',
-      'Pricing Excludes Disabled Feature',
-      'Super Admin Still Sees Control',
-    ],
-  },
-  {
-    name: 'data_consistency',
-    label: 'Scenario H: Data Consistency Validation',
-    description: 'Verify linked records maintain consistency',
-    steps: [
-      'Proposal Total Matches Scope',
-      'Invoice Total Matches Proposal',
-      'Payment Status Syncs to Launch Gate',
-      'Campaign Links to All Records',
-      'Client Data Isolation Maintained',
+      'Create and Approve Post',
+      'Verify Approval Lock Active',
+      'Attempt to Edit Approved Post',
+      'Verify Edit Blocked',
+      'Check Audit Log Entry',
+      'Request Approval Override',
+      'Verify Override Logged',
+      'Prevent Duplicate Publish Attempt',
     ],
   },
 ];
@@ -162,32 +211,13 @@ export default function QADashboard() {
   });
 
   const runValidation = useMutation({
-    mutationFn: async (scenarioName) => {
-      const existing = validationTests.find(t => t.scenario_name === scenarioName);
-      
-      if (existing) {
-        // Update existing test to running status
-        return await base44.entities.ValidationTest.update(existing.id, {
-          status: 'running',
-          last_run_date: new Date().toISOString(),
-        });
-      }
-      
-      // Create new test record
-      return await base44.entities.ValidationTest.create({
-        scenario_name: scenarioName,
-        scenario_label: scenarioDefinitions.find(s => s.name === scenarioName)?.label,
-        status: 'running',
-        steps: [],
-        last_run_date: new Date().toISOString(),
+    mutationFn: async (scenarioId) => {
+      return await base44.functions.invoke('runValidationTests', {
+        scenarioId,
       });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['validationTests'] });
-      // Simulate test completion after 2 seconds
-      setTimeout(() => {
-        queryClient.invalidateQueries({ queryKey: ['validationTests'] });
-      }, 2000);
     },
   });
 
@@ -260,7 +290,7 @@ export default function QADashboard() {
   };
 
   // Calculate metrics from actual test records - separated by state
-  const totalTests = 8; // Total scenarios defined (updated for invoice conversion)
+  const totalTests = 10; // Total scenarios defined (A-J)
   const notRunTests = validationTests.filter(t => t.status === 'pending').length;
   const runningTests = validationTests.filter(t => t.status === 'running').length;
   const completedTests = validationTests.filter(t => t.status === 'passed' || t.status === 'failed');
@@ -273,8 +303,8 @@ export default function QADashboard() {
   return (
     <div className="p-6 lg:p-8 max-w-[1600px] mx-auto">
       <SectionHeader
-        title="QA & Validation Dashboard"
-        subtitle="End-to-end testing for Revenue Operations workflow"
+        title="End-to-End Validation Dashboard"
+        subtitle="Full-platform QA across all 10 core workflows (Onboarding, Pricing, Publishing, Creative, Learning, Hardening, Ops)"
         icon={CheckCircle2}
       />
 
@@ -316,16 +346,17 @@ export default function QADashboard() {
       {/* Test Scenarios */}
       <div className="space-y-4">
         {scenarioDefinitions.map((scenario, idx) => {
-          const test = validationTests.find(t => t.scenario_name === scenario.name);
-          const testStatus = test?.status || 'pending';
+          const test = validationTests.find(t => t.scenario_id === scenario.id);
+          const testStatus = test?.status || 'not_run';
           const isExpanded = expandedScenario === scenario.name;
           const { campaign, invoice, client, proposal, approval, launchGate } = test ? getRelatedRecords(test) : {};
 
           const statusConfig = {
-            pending: { icon: Clock, color: 'slate', label: 'Not Run' },
+            not_run: { icon: Clock, color: 'slate', label: 'Not Run' },
             running: { icon: Clock, color: 'blue', label: 'Running', spin: true },
             passed: { icon: CheckCircle2, color: 'emerald', label: 'Passed' },
             failed: { icon: AlertCircle, color: 'red', label: 'Failed' },
+            incomplete: { icon: AlertCircle, color: 'amber', label: 'Incomplete' },
           };
 
           const config = statusConfig[testStatus];
@@ -505,39 +536,41 @@ export default function QADashboard() {
                         </motion.div>
                       )}
 
+                      {/* Summary Stats */}
+                      {test && (
+                        <div className="grid sm:grid-cols-3 gap-3 pt-4 border-t border-border/30">
+                          <div className="p-3 rounded-lg bg-secondary/30">
+                            <p className="text-xs text-muted-foreground mb-1">Passed</p>
+                            <p className="text-lg font-bold text-emerald-400">{test.validations_passed}/{test.validations_passed + test.validations_failed}</p>
+                          </div>
+                          <div className="p-3 rounded-lg bg-secondary/30">
+                            <p className="text-xs text-muted-foreground mb-1">Duration</p>
+                            <p className="text-lg font-bold text-foreground">{(test.duration_ms / 1000).toFixed(1)}s</p>
+                          </div>
+                          <div className="p-3 rounded-lg bg-secondary/30">
+                            <p className="text-xs text-muted-foreground mb-1">Run By</p>
+                            <p className="text-xs font-medium text-foreground truncate">{test.run_by}</p>
+                          </div>
+                        </div>
+                      )}
+
                       {/* Last Run Info */}
-                      {test?.last_run_date && (
+                      {test?.completed_at && (
                         <div className="text-xs text-muted-foreground pt-3 border-t border-border/30">
-                          Last run: {new Date(test.last_run_date).toLocaleDateString()} {new Date(test.last_run_date).toLocaleTimeString()}
+                          Last run: {new Date(test.completed_at).toLocaleDateString()} {new Date(test.completed_at).toLocaleTimeString()}
                         </div>
                       )}
 
                       {/* Actions */}
                       <div className="flex gap-3 pt-3 border-t border-border/30">
                         <Button
-                          onClick={() => runValidation.mutate(scenario.name)}
-                          disabled={testStatus === 'running'}
+                          onClick={() => runValidation.mutate(scenario.id)}
+                          disabled={testStatus === 'running' || runValidation.isPending}
                           className="flex-1 bg-primary hover:bg-primary/90 gap-2"
                         >
                           <Play className="w-4 h-4" />
                           {testStatus === 'running' ? 'Running...' : 'Run Test'}
                         </Button>
-                        {scenario.name === 'invoice_conversion' && (
-                          <Button
-                            onClick={() => {
-                              const proposal = proposals.find(p => p.proposal_number === 'PROP-001' && p.status === 'approved');
-                              if (proposal) {
-                                validateProposalInvoice.mutate(proposal.id);
-                              }
-                            }}
-                            disabled={validateProposalInvoice.isPending}
-                            variant="outline"
-                            className="gap-2"
-                          >
-                            <CheckCircle2 className="w-4 h-4" />
-                            Validate Conversion
-                          </Button>
-                        )}
                       </div>
                     </div>
                   </motion.div>
@@ -548,22 +581,24 @@ export default function QADashboard() {
         })}
       </div>
 
-      {/* Validation Rules Reference */}
+      {/* Validation Coverage */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
         className="glass-panel rounded-xl p-6 mt-8"
       >
-        <h2 className="font-semibold text-foreground mb-4">Validation Rules</h2>
+        <h2 className="font-semibold text-foreground mb-4">Platform Coverage</h2>
         <div className="grid sm:grid-cols-2 gap-4">
           {[
-            { title: 'Pricing', desc: 'Totals update correctly when quantities change' },
-            { title: 'Proposal', desc: 'Inherits scope and totals from calculator' },
-            { title: 'Invoice', desc: 'Inherits approved proposal data' },
-            { title: 'Payment Gate', desc: 'Unpaid campaigns stay blocked' },
-            { title: 'Permissions', desc: 'Client data isolation enforced' },
-            { title: 'Features', desc: 'Package toggles affect visibility' },
+            { title: 'Client Onboarding (A)', desc: 'Complete onboarding workflow & checklist' },
+            { title: 'Revenue Ops (B-C)', desc: 'Pricing → Proposal → Invoice → Payment gate' },
+            { title: 'Connectors (D)', desc: 'Account health, token expiry, sync status' },
+            { title: 'AI Creative Studio (E)', desc: 'Asset generation & approval workflow' },
+            { title: 'Publishing (F)', desc: 'Publishing workflow & failure handling' },
+            { title: 'Comment Ops (G)', desc: 'Comment classification & safety' },
+            { title: 'Permissions (H)', desc: 'Client isolation & role-based access' },
+            { title: 'Learning & Hardening (I-J)', desc: 'Performance learning & audit logs' },
           ].map((rule, idx) => (
             <div key={idx} className="p-3 rounded-lg bg-secondary/30">
               <p className="font-medium text-foreground text-sm">{rule.title}</p>
