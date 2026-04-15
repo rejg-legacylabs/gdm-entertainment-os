@@ -1,0 +1,116 @@
+{
+  "name": "PricingTemplate",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Template name"
+    },
+    "package_tier": {
+      "type": "string",
+      "enum": [
+        "starter",
+        "growth",
+        "premium",
+        "elite",
+        "custom"
+      ],
+      "description": "Associated package"
+    },
+    "campaign_type": {
+      "type": "string",
+      "enum": [
+        "donor",
+        "fundraising",
+        "awareness",
+        "recruiting",
+        "event",
+        "storytelling",
+        "nonprofit_outreach",
+        "community_engagement",
+        "brand_growth"
+      ],
+      "description": "Campaign type"
+    },
+    "base_price": {
+      "type": "number",
+      "description": "Base monthly or campaign price"
+    },
+    "pricing_model": {
+      "type": "string",
+      "enum": [
+        "monthly_retainer",
+        "one_time_campaign",
+        "hybrid"
+      ],
+      "description": "Pricing model type"
+    },
+    "line_items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "service": {
+            "type": "string",
+            "enum": [
+              "facebook_posts",
+              "instagram_posts",
+              "tiktok_posts",
+              "linkedin_posts",
+              "youtube_posts",
+              "reels",
+              "stories",
+              "carousels",
+              "strategy_fee",
+              "setup_fee",
+              "reporting_fee",
+              "community_management",
+              "revisions",
+              "video_editing",
+              "rush_fee",
+              "ai_generation",
+              "autopilot",
+              "donor_campaign",
+              "recruiting_campaign",
+              "dedicated_manager",
+              "custom_addon"
+            ]
+          },
+          "quantity": {
+            "type": "number"
+          },
+          "unit_price": {
+            "type": "number"
+          },
+          "total": {
+            "type": "number"
+          }
+        }
+      },
+      "description": "Line items for pricing"
+    },
+    "platforms": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Included platforms"
+    },
+    "features": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Included features"
+    },
+    "is_default": {
+      "type": "boolean",
+      "default": false,
+      "description": "Is this the default template"
+    }
+  },
+  "required": [
+    "name",
+    "package_tier"
+  ]
+}

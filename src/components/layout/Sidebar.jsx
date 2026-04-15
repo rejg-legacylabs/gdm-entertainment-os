@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard, Building2, Megaphone, PenTool, Video, Calendar,
   Inbox, BarChart3, FolderOpen, Brain, Settings, ChevronLeft, ChevronRight,
-  Sparkles, Crown
+  Sparkles, Crown, DollarSign, FileText, Lock
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -19,8 +19,16 @@ const navItems = [
   { path: '/analytics', icon: BarChart3, label: 'Analytics' },
   { path: '/assets', icon: FolderOpen, label: 'Assets' },
   { path: '/ai-strategy', icon: Brain, label: 'AI Strategy' },
-  { path: '/settings', icon: Settings, label: 'Settings' },
 ];
+
+const revenueOpsItems = [
+  { path: '/pricing-studio', icon: DollarSign, label: 'Pricing Studio' },
+  { path: '/proposal-studio', icon: FileText, label: 'Proposal Studio' },
+  { path: '/invoice-center', icon: BarChart3, label: 'Invoice Center' },
+  { path: '/launch-gate', icon: Lock, label: 'Launch Gate' },
+];
+
+const allNavItems = [...navItems, ...revenueOpsItems, { path: '/settings', icon: Settings, label: 'Settings' }];
 
 export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
@@ -56,40 +64,51 @@ export default function Sidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 py-4 px-2 space-y-1 overflow-y-auto">
-        {navItems.map((item) => {
+        {allNavItems.map((item) => {
           const isActive = location.pathname === item.path ||
             (item.path !== '/' && location.pathname.startsWith(item.path));
+          
+          // Add divider before Revenue Ops
+          const isRevenueOpsStart = item.path === '/pricing-studio';
+          
           return (
-            <Link key={item.path} to={item.path}>
-              <div
-                className={cn(
-                  'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group',
-                  isActive
-                    ? 'bg-primary/10 text-primary'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
-                )}
-              >
-                <item.icon className={cn('w-5 h-5 flex-shrink-0', isActive && 'text-primary')} />
-                <AnimatePresence>
-                  {!collapsed && (
-                    <motion.span
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      className="text-sm font-medium whitespace-nowrap"
-                    >
-                      {item.label}
-                    </motion.span>
+            <div key={item.path}>
+              {isRevenueOpsStart && !collapsed && (
+                <div className="px-3 py-2 mt-2">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Revenue Ops</p>
+                </div>
+              )}
+              <Link to={item.path}>
+                <div
+                  className={cn(
+                    'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group',
+                    isActive
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
                   )}
-                </AnimatePresence>
-                {isActive && (
-                  <motion.div
-                    layoutId="sidebar-indicator"
-                    className="absolute left-0 w-[3px] h-8 bg-primary rounded-r-full"
-                  />
-                )}
-              </div>
-            </Link>
+                >
+                  <item.icon className={cn('w-5 h-5 flex-shrink-0', isActive && 'text-primary')} />
+                  <AnimatePresence>
+                    {!collapsed && (
+                      <motion.span
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="text-sm font-medium whitespace-nowrap"
+                      >
+                        {item.label}
+                      </motion.span>
+                    )}
+                  </AnimatePresence>
+                  {isActive && (
+                    <motion.div
+                      layoutId="sidebar-indicator"
+                      className="absolute left-0 w-[3px] h-8 bg-primary rounded-r-full"
+                    />
+                  )}
+                </div>
+              </Link>
+            </div>
           );
         })}
       </nav>

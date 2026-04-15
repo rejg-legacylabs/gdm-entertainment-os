@@ -19,6 +19,11 @@ import Analytics from '@/pages/Analytics';
 import AIStrategy from '@/pages/AIStrategy';
 import Assets from '@/pages/Assets';
 import SettingsPage from '@/pages/SettingsPage';
+import PricingStudio from '@/pages/PricingStudio';
+import ProposalStudio from '@/pages/ProposalStudio';
+import InvoiceCenter from '@/pages/InvoiceCenter';
+import LaunchGateCenter from '@/pages/LaunchGateCenter';
+import ClientDashboard from '@/pages/ClientDashboard';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -58,6 +63,11 @@ const AuthenticatedApp = () => {
         <Route path="/ai-strategy" element={<AIStrategy />} />
         <Route path="/assets" element={<Assets />} />
         <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/pricing-studio" element={<PricingStudio />} />
+        <Route path="/proposal-studio" element={<ProposalStudio />} />
+        <Route path="/invoice-center" element={<InvoiceCenter />} />
+        <Route path="/launch-gate" element={<LaunchGateCenter />} />
+        <Route path="/client-dashboard" element={<ClientDashboard />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>

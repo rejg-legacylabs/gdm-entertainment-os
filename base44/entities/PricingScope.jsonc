@@ -1,0 +1,131 @@
+{
+  "name": "PricingScope",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Scope name"
+    },
+    "client_id": {
+      "type": "string",
+      "description": "Associated client"
+    },
+    "client_name": {
+      "type": "string",
+      "description": "Client name"
+    },
+    "campaign_id": {
+      "type": "string",
+      "description": "Associated campaign"
+    },
+    "campaign_name": {
+      "type": "string",
+      "description": "Campaign name"
+    },
+    "brand_name": {
+      "type": "string",
+      "description": "Brand name"
+    },
+    "package_tier": {
+      "type": "string",
+      "enum": [
+        "starter",
+        "growth",
+        "premium",
+        "elite",
+        "custom"
+      ],
+      "description": "Package tier"
+    },
+    "pricing_model": {
+      "type": "string",
+      "enum": [
+        "monthly_retainer",
+        "one_time_campaign",
+        "hybrid"
+      ],
+      "description": "Pricing model"
+    },
+    "campaign_duration_months": {
+      "type": "number",
+      "description": "Duration in months"
+    },
+    "line_items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "service": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "number"
+          },
+          "unit_price": {
+            "type": "number"
+          },
+          "total": {
+            "type": "number"
+          }
+        }
+      },
+      "description": "Pricing line items"
+    },
+    "subtotal": {
+      "type": "number",
+      "description": "Subtotal before tax"
+    },
+    "tax_percent": {
+      "type": "number",
+      "default": 0,
+      "description": "Tax percentage"
+    },
+    "tax_amount": {
+      "type": "number",
+      "default": 0,
+      "description": "Tax amount"
+    },
+    "total": {
+      "type": "number",
+      "description": "Total price"
+    },
+    "monthly_total": {
+      "type": "number",
+      "description": "Monthly recurring amount"
+    },
+    "one_time_fee": {
+      "type": "number",
+      "description": "One-time fee"
+    },
+    "platforms": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Platforms included"
+    },
+    "deliverables": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Deliverables summary"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "saved",
+        "proposal_generated",
+        "archived"
+      ],
+      "default": "draft",
+      "description": "Scope status"
+    }
+  },
+  "required": [
+    "name",
+    "client_id",
+    "package_tier"
+  ]
+}

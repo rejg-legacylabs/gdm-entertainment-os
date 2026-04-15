@@ -1,0 +1,70 @@
+{
+  "name": "Payment",
+  "type": "object",
+  "properties": {
+    "invoice_id": {
+      "type": "string",
+      "description": "Associated invoice"
+    },
+    "invoice_number": {
+      "type": "string",
+      "description": "Invoice number"
+    },
+    "client_id": {
+      "type": "string",
+      "description": "Client ID"
+    },
+    "client_name": {
+      "type": "string",
+      "description": "Client name"
+    },
+    "campaign_id": {
+      "type": "string",
+      "description": "Campaign ID"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Payment amount"
+    },
+    "payment_method": {
+      "type": "string",
+      "enum": [
+        "credit_card",
+        "bank_transfer",
+        "check",
+        "stripe",
+        "paypal"
+      ],
+      "description": "Payment method"
+    },
+    "payment_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Payment date"
+    },
+    "transaction_id": {
+      "type": "string",
+      "description": "Transaction ID from payment processor"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "completed",
+        "failed",
+        "refunded"
+      ],
+      "default": "pending",
+      "description": "Payment status"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Notes about payment"
+    }
+  },
+  "required": [
+    "invoice_id",
+    "client_id",
+    "amount"
+  ]
+}
