@@ -35,6 +35,7 @@ const executionOpsItems = [
   { path: '/publishing-queue', icon: PenTool, label: 'Publishing Queue' },
   { path: '/failed-posts', icon: AlertCircle, label: 'Failed Posts' },
   { path: '/comment-ops', icon: Inbox, label: 'Comment Ops' },
+  { path: '/audit-dashboard', icon: Zap, label: 'Audit Dashboard' },
 ];
 
 const allNavItems = [...navItems, ...revenueOpsItems, ...executionOpsItems, { path: '/settings', icon: Settings, label: 'Settings' }];

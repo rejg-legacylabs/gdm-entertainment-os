@@ -1,0 +1,122 @@
+{
+  "name": "OverrideLog",
+  "type": "object",
+  "properties": {
+    "override_type": {
+      "type": "string",
+      "enum": [
+        "launch_gate_override",
+        "approval_gate_override",
+        "payment_gate_override",
+        "sensitive_reply_auto_send",
+        "account_reconnection",
+        "account_disconnection",
+        "package_change"
+      ],
+      "description": "Type of override"
+    },
+    "entity_type": {
+      "type": "string",
+      "enum": [
+        "campaign",
+        "post",
+        "comment_reply",
+        "connected_account",
+        "client"
+      ],
+      "description": "Entity being overridden"
+    },
+    "entity_id": {
+      "type": "string",
+      "description": "Entity ID"
+    },
+    "entity_name": {
+      "type": "string",
+      "description": "Entity name for context"
+    },
+    "campaign_id": {
+      "type": "string",
+      "description": "Campaign context"
+    },
+    "campaign_name": {
+      "type": "string"
+    },
+    "brand_id": {
+      "type": "string",
+      "description": "Brand context"
+    },
+    "brand_name": {
+      "type": "string"
+    },
+    "requested_by": {
+      "type": "string",
+      "description": "User who requested override"
+    },
+    "requested_by_role": {
+      "type": "string",
+      "description": "Role of requester"
+    },
+    "approved_by": {
+      "type": "string",
+      "description": "User who approved override"
+    },
+    "approved_by_role": {
+      "type": "string",
+      "description": "Role of approver"
+    },
+    "reason": {
+      "type": "string",
+      "description": "Why override was needed"
+    },
+    "risk_acknowledged": {
+      "type": "boolean",
+      "default": false,
+      "description": "Did user acknowledge risks"
+    },
+    "risk_description": {
+      "type": "string",
+      "description": "What risks were acknowledged"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "requested",
+        "approved",
+        "denied",
+        "executed"
+      ],
+      "default": "requested",
+      "description": "Status of override"
+    },
+    "requested_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When requested"
+    },
+    "approved_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When approved"
+    },
+    "executed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When executed"
+    },
+    "denial_reason": {
+      "type": "string",
+      "description": "Why denied (if applicable)"
+    },
+    "approval_notes": {
+      "type": "string",
+      "description": "Approver notes"
+    }
+  },
+  "required": [
+    "override_type",
+    "entity_type",
+    "entity_id",
+    "requested_by",
+    "reason"
+  ]
+}

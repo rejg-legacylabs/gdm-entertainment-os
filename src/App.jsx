@@ -31,6 +31,7 @@ import ClientApprovalCenter from '@/pages/ClientApprovalCenter';
 import PublishingQueueCenter from '@/pages/PublishingQueueCenter';
 import FailedPostsCenter from '@/pages/FailedPostsCenter';
 import CommentOpsCenter from '@/pages/CommentOpsCenter';
+import AuditDashboard from '@/pages/AuditDashboard';
 import { initializeDemoData } from '@/lib/demoDataGenerator';
 
 const AuthenticatedApp = () => {
@@ -87,6 +88,7 @@ const AuthenticatedApp = () => {
         <Route path="/publishing-queue" element={<PublishingQueueCenter />} />
         <Route path="/failed-posts" element={<FailedPostsCenter />} />
         <Route path="/comment-ops" element={<CommentOpsCenter />} />
+        <Route path="/audit-dashboard" element={<AuditDashboard />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>

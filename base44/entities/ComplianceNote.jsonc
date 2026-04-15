@@ -1,0 +1,96 @@
+{
+  "name": "ComplianceNote",
+  "type": "object",
+  "properties": {
+    "client_id": {
+      "type": "string",
+      "description": "Associated client"
+    },
+    "client_name": {
+      "type": "string",
+      "description": "Client name"
+    },
+    "brand_id": {
+      "type": "string",
+      "description": "Brand (if applicable)"
+    },
+    "brand_name": {
+      "type": "string",
+      "description": "Brand name"
+    },
+    "note_type": {
+      "type": "string",
+      "enum": [
+        "restricted_topic",
+        "required_disclaimer",
+        "legal_sensitive",
+        "brand_sensitive",
+        "donor_sensitive",
+        "crisis_contact",
+        "compliance_requirement",
+        "operational_note"
+      ],
+      "description": "Type of compliance note"
+    },
+    "title": {
+      "type": "string",
+      "description": "Short title"
+    },
+    "content": {
+      "type": "string",
+      "description": "Full compliance note"
+    },
+    "applies_to_platforms": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Platforms this applies to (leave empty for all)"
+    },
+    "applies_to_content_types": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Content types affected (leave empty for all)"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Is this note active"
+    },
+    "is_mandatory": {
+      "type": "boolean",
+      "default": false,
+      "description": "Must content acknowledge this"
+    },
+    "escalation_contact": {
+      "type": "string",
+      "description": "Who to escalate issues to"
+    },
+    "escalation_email": {
+      "type": "string",
+      "description": "Escalation contact email"
+    },
+    "created_by": {
+      "type": "string",
+      "description": "Who created this"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When created"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When last updated"
+    }
+  },
+  "required": [
+    "client_id",
+    "note_type",
+    "title",
+    "content"
+  ]
+}

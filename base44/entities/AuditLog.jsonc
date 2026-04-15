@@ -1,0 +1,135 @@
+{
+  "name": "AuditLog",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "User who performed action"
+    },
+    "user_role": {
+      "type": "string",
+      "description": "User role at time of action"
+    },
+    "action_type": {
+      "type": "string",
+      "enum": [
+        "campaign_created",
+        "campaign_updated",
+        "campaign_deleted",
+        "content_generated",
+        "content_edited",
+        "content_approved",
+        "content_rejected",
+        "post_sent_for_approval",
+        "post_approved",
+        "post_rejected",
+        "post_published",
+        "post_failed",
+        "post_retry",
+        "proposal_created",
+        "proposal_sent",
+        "proposal_viewed",
+        "proposal_accepted",
+        "invoice_created",
+        "invoice_sent",
+        "payment_recorded",
+        "connected_account_added",
+        "connected_account_removed",
+        "connected_account_reconnected",
+        "reply_sent",
+        "reply_drafted",
+        "comment_moderated",
+        "comment_escalated",
+        "launch_gate_override",
+        "approval_gate_override",
+        "payment_gate_override",
+        "approval_lock_changed",
+        "compliance_note_added",
+        "client_settings_changed"
+      ],
+      "description": "Type of action"
+    },
+    "entity_type": {
+      "type": "string",
+      "enum": [
+        "campaign",
+        "post",
+        "content_asset",
+        "generated_creative",
+        "proposal",
+        "invoice",
+        "connected_account",
+        "comment_reply",
+        "launch_gate",
+        "client"
+      ],
+      "description": "Entity affected"
+    },
+    "entity_id": {
+      "type": "string",
+      "description": "ID of entity"
+    },
+    "entity_name": {
+      "type": "string",
+      "description": "Name of entity (campaign, post title, etc.)"
+    },
+    "brand_id": {
+      "type": "string",
+      "description": "Brand affected"
+    },
+    "brand_name": {
+      "type": "string",
+      "description": "Brand name"
+    },
+    "campaign_id": {
+      "type": "string",
+      "description": "Campaign affected"
+    },
+    "campaign_name": {
+      "type": "string",
+      "description": "Campaign name"
+    },
+    "details": {
+      "type": "object",
+      "description": "Action-specific details (what changed, why, metadata)"
+    },
+    "before_state": {
+      "type": "object",
+      "description": "State before change"
+    },
+    "after_state": {
+      "type": "object",
+      "description": "State after change"
+    },
+    "ip_address": {
+      "type": "string",
+      "description": "IP address of user"
+    },
+    "risk_level": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "default": "low",
+      "description": "Risk level of action"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When action occurred"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional notes"
+    }
+  },
+  "required": [
+    "user_email",
+    "action_type",
+    "entity_type",
+    "timestamp"
+  ]
+}

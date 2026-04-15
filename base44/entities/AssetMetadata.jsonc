@@ -1,0 +1,121 @@
+{
+  "name": "AssetMetadata",
+  "type": "object",
+  "properties": {
+    "asset_id": {
+      "type": "string",
+      "description": "The asset being tracked"
+    },
+    "asset_type": {
+      "type": "string",
+      "enum": [
+        "generated_creative",
+        "uploaded_image",
+        "uploaded_video",
+        "uploaded_document",
+        "content_asset",
+        "post_media"
+      ],
+      "description": "Type of asset"
+    },
+    "asset_name": {
+      "type": "string",
+      "description": "Asset name/title"
+    },
+    "source_type": {
+      "type": "string",
+      "enum": [
+        "url",
+        "uploaded_file",
+        "ai_generated",
+        "video_transcript",
+        "campaign_brief",
+        "external_api"
+      ],
+      "description": "Where asset came from"
+    },
+    "source_url": {
+      "type": "string",
+      "description": "URL if from web"
+    },
+    "source_file_name": {
+      "type": "string",
+      "description": "Original file name if uploaded"
+    },
+    "source_document_type": {
+      "type": "string",
+      "description": "Type of source document"
+    },
+    "transcript_source": {
+      "type": "string",
+      "description": "If from video transcript, the video ID"
+    },
+    "ai_generation_model": {
+      "type": "string",
+      "description": "If AI-generated, which model"
+    },
+    "ai_generation_prompt": {
+      "type": "string",
+      "description": "Prompt used for generation"
+    },
+    "created_by": {
+      "type": "string",
+      "description": "User who created asset"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "rights_notes": {
+      "type": "string",
+      "description": "Rights/license/attribution notes"
+    },
+    "usage_rights": {
+      "type": "string",
+      "enum": [
+        "fully_owned",
+        "licensed",
+        "Creative_Commons",
+        "attributed",
+        "uncertain"
+      ],
+      "description": "Rights status"
+    },
+    "usage_notes": {
+      "type": "string",
+      "description": "Any restrictions or notes on usage"
+    },
+    "campaign_id": {
+      "type": "string",
+      "description": "Associated campaign"
+    },
+    "campaign_name": {
+      "type": "string"
+    },
+    "brand_id": {
+      "type": "string",
+      "description": "Associated brand"
+    },
+    "brand_name": {
+      "type": "string"
+    },
+    "is_approved": {
+      "type": "boolean",
+      "default": false,
+      "description": "Asset approved for use"
+    },
+    "approved_by": {
+      "type": "string",
+      "description": "Who approved"
+    },
+    "approved_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "asset_id",
+    "asset_type",
+    "source_type"
+  ]
+}
