@@ -1,0 +1,76 @@
+{
+  "name": "Brand",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Brand name"
+    },
+    "logo_url": {
+      "type": "string",
+      "description": "Logo image URL"
+    },
+    "mission": {
+      "type": "string",
+      "description": "Brand mission statement"
+    },
+    "audience": {
+      "type": "string",
+      "description": "Target audience description"
+    },
+    "tone": {
+      "type": "string",
+      "description": "Tone of voice"
+    },
+    "color_accent": {
+      "type": "string",
+      "description": "Brand accent color hex"
+    },
+    "content_pillars": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Content pillars"
+    },
+    "approved_hashtags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Approved hashtags"
+    },
+    "restricted_topics": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Topics to avoid"
+    },
+    "cta_library": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Approved CTAs"
+    },
+    "campaign_objectives": {
+      "type": "string",
+      "description": "Primary campaign objectives"
+    },
+    "connected_channels": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Connected social channels"
+    },
+    "ai_strategy_profile": {
+      "type": "string",
+      "description": "AI strategy configuration"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

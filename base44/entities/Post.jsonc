@@ -1,0 +1,110 @@
+{
+  "name": "Post",
+  "type": "object",
+  "properties": {
+    "brand_id": {
+      "type": "string"
+    },
+    "brand_name": {
+      "type": "string"
+    },
+    "campaign_id": {
+      "type": "string"
+    },
+    "campaign_name": {
+      "type": "string"
+    },
+    "platform": {
+      "type": "string",
+      "enum": [
+        "instagram",
+        "facebook",
+        "linkedin",
+        "tiktok",
+        "youtube",
+        "twitter"
+      ]
+    },
+    "content_type": {
+      "type": "string",
+      "enum": [
+        "caption",
+        "carousel",
+        "reel",
+        "story",
+        "video",
+        "article",
+        "short"
+      ]
+    },
+    "caption": {
+      "type": "string"
+    },
+    "media_url": {
+      "type": "string"
+    },
+    "hashtags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "cta": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "idea",
+        "draft",
+        "ready_for_review",
+        "approved",
+        "scheduled",
+        "published",
+        "revise"
+      ],
+      "default": "draft"
+    },
+    "scheduled_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "published_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "impressions": {
+      "type": "number",
+      "default": 0
+    },
+    "reach": {
+      "type": "number",
+      "default": 0
+    },
+    "engagement": {
+      "type": "number",
+      "default": 0
+    },
+    "clicks": {
+      "type": "number",
+      "default": 0
+    },
+    "shares": {
+      "type": "number",
+      "default": 0
+    },
+    "saves": {
+      "type": "number",
+      "default": 0
+    },
+    "comments_count": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "brand_name",
+    "platform",
+    "caption"
+  ]
+}

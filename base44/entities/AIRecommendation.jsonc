@@ -1,0 +1,61 @@
+{
+  "name": "AIRecommendation",
+  "type": "object",
+  "properties": {
+    "brand_name": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "content",
+        "campaign",
+        "engagement",
+        "analytics",
+        "strategy",
+        "publishing",
+        "growth",
+        "donor",
+        "recruiting"
+      ]
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "default": "medium"
+    },
+    "action_type": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "accepted",
+        "dismissed",
+        "completed"
+      ],
+      "default": "pending"
+    },
+    "impact_score": {
+      "type": "number",
+      "description": "Estimated impact 1-10"
+    }
+  },
+  "required": [
+    "title",
+    "description",
+    "category"
+  ]
+}

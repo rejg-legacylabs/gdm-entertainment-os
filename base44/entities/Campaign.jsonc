@@ -1,0 +1,94 @@
+{
+  "name": "Campaign",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "brand_id": {
+      "type": "string",
+      "description": "Associated brand ID"
+    },
+    "brand_name": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "donor",
+        "fundraising",
+        "awareness",
+        "recruiting",
+        "hiring",
+        "event",
+        "storytelling",
+        "nonprofit_outreach",
+        "transitional_housing",
+        "community_engagement",
+        "brand_growth"
+      ]
+    },
+    "objective": {
+      "type": "string"
+    },
+    "target_audience": {
+      "type": "string"
+    },
+    "platforms": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "cta": {
+      "type": "string"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "content_frequency": {
+      "type": "string"
+    },
+    "desired_outcomes": {
+      "type": "string"
+    },
+    "theme": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "active",
+        "paused",
+        "completed"
+      ],
+      "default": "draft"
+    },
+    "health_score": {
+      "type": "number",
+      "description": "0-100 campaign health"
+    },
+    "total_posts": {
+      "type": "number",
+      "default": 0
+    },
+    "total_engagement": {
+      "type": "number",
+      "default": 0
+    },
+    "total_reach": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "name",
+    "brand_name"
+  ]
+}

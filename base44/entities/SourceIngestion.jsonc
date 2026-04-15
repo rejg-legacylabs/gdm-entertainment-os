@@ -1,0 +1,78 @@
+{
+  "name": "SourceIngestion",
+  "type": "object",
+  "properties": {
+    "brand_name": {
+      "type": "string"
+    },
+    "source_type": {
+      "type": "string",
+      "enum": [
+        "url",
+        "blog",
+        "document",
+        "image",
+        "video",
+        "testimonial",
+        "story",
+        "job_posting",
+        "campaign_note"
+      ]
+    },
+    "source_url": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "raw_content": {
+      "type": "string"
+    },
+    "summary": {
+      "type": "string"
+    },
+    "post_ideas": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "hooks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "hashtag_suggestions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "cta_suggestions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "story_angles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "processed",
+        "archived"
+      ],
+      "default": "pending"
+    }
+  },
+  "required": [
+    "title",
+    "source_type"
+  ]
+}

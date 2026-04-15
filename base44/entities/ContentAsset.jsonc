@@ -1,0 +1,51 @@
+{
+  "name": "ContentAsset",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "brand_name": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "image",
+        "video",
+        "document",
+        "draft",
+        "approved_content"
+      ]
+    },
+    "file_url": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "campaign_name": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "uploaded",
+        "processing",
+        "ready",
+        "archived"
+      ],
+      "default": "uploaded"
+    }
+  },
+  "required": [
+    "name",
+    "type"
+  ]
+}

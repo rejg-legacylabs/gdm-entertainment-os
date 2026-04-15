@@ -1,0 +1,84 @@
+{
+  "name": "InboxItem",
+  "type": "object",
+  "properties": {
+    "brand_name": {
+      "type": "string"
+    },
+    "platform": {
+      "type": "string",
+      "enum": [
+        "instagram",
+        "facebook",
+        "linkedin",
+        "tiktok",
+        "youtube",
+        "twitter"
+      ]
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "comment",
+        "mention",
+        "question",
+        "lead",
+        "support",
+        "spam"
+      ]
+    },
+    "sentiment": {
+      "type": "string",
+      "enum": [
+        "positive",
+        "neutral",
+        "negative",
+        "urgent"
+      ]
+    },
+    "author_name": {
+      "type": "string"
+    },
+    "author_handle": {
+      "type": "string"
+    },
+    "message": {
+      "type": "string"
+    },
+    "post_reference": {
+      "type": "string"
+    },
+    "suggested_reply": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "new",
+        "read",
+        "replied",
+        "flagged",
+        "archived"
+      ],
+      "default": "new"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "urgent"
+      ],
+      "default": "medium"
+    },
+    "campaign_name": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "brand_name",
+    "message",
+    "author_name"
+  ]
+}
