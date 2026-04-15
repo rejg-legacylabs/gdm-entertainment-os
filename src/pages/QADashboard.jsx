@@ -222,12 +222,13 @@ export default function QADashboard() {
     },
   };
 
-  // Calculate metrics from actual test records
+  // Calculate metrics from actual test records - separated by state
+  const totalTests = scenarioDefinitions.length; // Total scenarios defined
+  const notRunTests = validationTests.filter(t => t.status === 'pending').length;
+  const runningTests = validationTests.filter(t => t.status === 'running').length;
   const completedTests = validationTests.filter(t => t.status === 'passed' || t.status === 'failed');
   const passedTests = validationTests.filter(t => t.status === 'passed').length;
   const failedTests = validationTests.filter(t => t.status === 'failed').length;
-  const runningTests = validationTests.filter(t => t.status === 'running').length;
-  const totalTests = scenarioDefinitions.length; // Total visible scenarios
   const passRate = completedTests.length > 0
     ? Math.round((passedTests / completedTests.length) * 100)
     : 0;
@@ -241,18 +242,22 @@ export default function QADashboard() {
       />
 
       {/* Summary Stats */}
-      <div className="grid sm:grid-cols-4 gap-4 mb-8">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-6 gap-4 mb-8">
         {[
-          { label: 'Total Tests', value: totalTests, color: 'blue', subtitle: `${validationTests.length} Run` },
-          { label: 'Passed', value: passedTests, color: 'emerald', subtitle: `${Math.round((passedTests / completedTests.length * 100) || 0)}%` },
-          { label: 'Failed', value: failedTests, color: 'red', subtitle: completedTests.length > 0 ? `${failedTests} failed` : 'None yet' },
-          { label: 'Pass Rate', value: `${passRate}%`, color: passRate >= 80 ? 'emerald' : passRate > 0 ? 'amber' : 'slate', subtitle: completedTests.length > 0 ? `${completedTests.length} completed` : 'Run tests' },
+          { label: 'Total Tests', value: totalTests, color: 'blue', subtitle: 'Defined' },
+          { label: 'Not Run', value: notRunTests, color: 'slate', subtitle: 'Pending' },
+          { label: 'Running', value: runningTests, color: 'amber', subtitle: 'In Progress' },
+          { label: 'Completed', value: completedTests.length, color: 'purple', subtitle: `${passedTests}✓ ${failedTests}✗` },
+          { label: 'Passed', value: passedTests, color: 'emerald', subtitle: completedTests.length > 0 ? `${passRate}% rate` : 'N/A' },
+          { label: 'Pass Rate', value: `${passRate}%`, color: passRate >= 80 ? 'emerald' : passRate > 0 ? 'amber' : 'slate', subtitle: completedTests.length > 0 ? `${completedTests.length}/${totalTests}` : '0 completed' },
         ].map((stat, idx) => {
           const colors = {
             blue: 'bg-blue-500/10 text-blue-400 border-blue-500/30',
             emerald: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
             red: 'bg-red-500/10 text-red-400 border-red-500/30',
             amber: 'bg-amber-500/10 text-amber-400 border-amber-500/30',
+            purple: 'bg-purple-500/10 text-purple-400 border-purple-500/30',
+            slate: 'bg-slate-500/10 text-slate-400 border-slate-500/30',
           };
 
           return (

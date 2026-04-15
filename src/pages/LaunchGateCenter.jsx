@@ -11,6 +11,7 @@ import LaunchGateTimeline from '@/components/revenue-ops/LaunchGateTimeline';
 export default function LaunchGateCenter() {
   const queryClient = useQueryClient();
   const [expandedGate, setExpandedGate] = useState(null);
+  const [blockerModal, setBlockerModal] = useState(null);
 
   const { data: launchGates = [] } = useQuery({
     queryKey: ['launchGates'],
@@ -34,6 +35,19 @@ export default function LaunchGateCenter() {
 
   const clearLaunchGate = useMutation({
     mutationFn: async (gateId) => {
+      const gate = launchGates.find(g => g.id === gateId);
+      const status = getGateStatus(gate);
+      
+      // Block launch if critical issues exist
+      if (status.issueCount > 0) {
+        setBlockerModal({
+          gateId,
+          issues: status.issues,
+          campaign: gate.campaign_name,
+        });
+        throw new Error('Cannot launch: unresolved blockers');
+      }
+      
       return await base44.entities.LaunchGate.update(gateId, {
         can_launch: true,
         blocked_reason: null,
@@ -60,15 +74,19 @@ export default function LaunchGateCenter() {
     const issues = [];
 
     if (gate.approval_required && gate.approval_status !== 'approved') {
-      issues.push({ type: 'approval', severity: 'high' });
+      issues.push({ type: 'approval', severity: 'high', label: 'Awaiting client approval' });
     }
 
     if (gate.payment_required && gate.payment_status !== 'paid') {
-      issues.push({ type: 'payment', severity: 'high' });
+      issues.push({ type: 'payment', severity: 'high', label: `Payment pending: $${(gate.total_due - gate.amount_paid).toLocaleString()}` });
+    }
+
+    if (gate.blocked_reason) {
+      issues.push({ type: 'blocked', severity: 'critical', label: gate.blocked_reason });
     }
 
     return {
-      isReady: issues.length === 0 && gate.can_launch,
+      isReady: issues.filter(i => i.severity !== 'blocked').length === 0 && gate.can_launch,
       issueCount: issues.length,
       issues,
     };
@@ -187,11 +205,13 @@ export default function LaunchGateCenter() {
                         <LaunchGateTimeline gate={gate} />
 
                         {/* Actions */}
-                        {!status.isReady && (
+                        {!status.isReady && status.issueCount > 0 && (
                           <div className="flex gap-3 pt-4 border-t border-border/30">
                             <Button
                               onClick={() => clearLaunchGate.mutate(gate.id)}
-                              className="flex-1 bg-primary hover:bg-primary/90"
+                              disabled={status.issueCount > 0}
+                              className="flex-1 bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+                              title={status.issueCount > 0 ? `Cannot launch: ${status.issueCount} unresolved issue(s)` : ''}
                             >
                               Clear Launch Gate
                             </Button>
@@ -214,6 +234,51 @@ export default function LaunchGateCenter() {
           })
         )}
       </div>
+
+      {/* Blocker Modal */}
+      <AnimatePresence>
+        {blockerModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+            onClick={() => setBlockerModal(null)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              onClick={(e) => e.stopPropagation()}
+              className="glass-panel rounded-xl p-6 max-w-md w-full border border-red-500/30 bg-red-500/5"
+            >
+              <div className="flex items-start gap-3 mb-4">
+                <AlertCircle className="w-6 h-6 text-red-400 flex-shrink-0" />
+                <div>
+                  <h3 className="font-semibold text-foreground">Cannot Launch Campaign</h3>
+                  <p className="text-sm text-muted-foreground mt-1">{blockerModal.campaign}</p>
+                </div>
+              </div>
+              
+              <div className="space-y-2 mb-6 p-4 rounded-lg bg-secondary/30">
+                {blockerModal.issues.map((issue, idx) => (
+                  <div key={idx} className="flex items-start gap-2">
+                    <AlertCircle className="w-4 h-4 text-red-400 mt-0.5 flex-shrink-0" />
+                    <span className="text-sm text-foreground">{issue.label}</span>
+                  </div>
+                ))}
+              </div>
+
+              <Button
+                onClick={() => setBlockerModal(null)}
+                className="w-full"
+                variant="outline"
+              >
+                Dismiss
+              </Button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

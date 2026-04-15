@@ -6,6 +6,7 @@ import { ArrowLeft, CheckCircle2, AlertCircle, MessageSquare, Calendar, FileText
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import ApprovalTimeline from '@/components/revenue-ops/ApprovalTimeline';
+import { formatDate, formatDateTime } from '@/lib/dateUtils';
 
 export default function ApprovalDetailView({ approval, onBack }) {
   const queryClient = useQueryClient();
@@ -120,14 +121,18 @@ export default function ApprovalDetailView({ approval, onBack }) {
             </div>
 
             {/* Details Grid */}
-            <div className="grid sm:grid-cols-2 gap-4 py-4 border-y border-border/30">
+            <div className="grid sm:grid-cols-3 gap-4 py-4 border-y border-border/30">
               <div>
                 <p className="text-xs text-muted-foreground mb-1">Approval Type</p>
                 <p className="text-sm font-medium text-foreground capitalize">{approval.approval_type}</p>
               </div>
               <div>
                 <p className="text-xs text-muted-foreground mb-1">Requested</p>
-                <p className="text-sm font-medium text-foreground">{new Date(approval.requested_date).toLocaleDateString()}</p>
+                <p className="text-sm font-medium text-foreground">{formatDate(approval.requested_date, 'Not requested')}</p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground mb-1">Viewed</p>
+                <p className="text-sm font-medium text-foreground">{approval.viewed_date ? formatDate(approval.viewed_date) : '—'}</p>
               </div>
               {approval.approved_date && (
                 <>
@@ -137,7 +142,27 @@ export default function ApprovalDetailView({ approval, onBack }) {
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground mb-1">Approved Date</p>
-                    <p className="text-sm font-medium text-emerald-400">{new Date(approval.approved_date).toLocaleDateString()}</p>
+                    <p className="text-sm font-medium text-emerald-400">{formatDate(approval.approved_date)}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">Status</p>
+                    <p className="text-sm font-medium text-emerald-400">✓ Finalized</p>
+                  </div>
+                </>
+              )}
+              {approval.approval_status === 'rejected' && (
+                <>
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">Rejected By</p>
+                    <p className="text-sm font-medium text-red-400">{approval.approved_by || 'Client'}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">Rejected Date</p>
+                    <p className="text-sm font-medium text-red-400">{formatDate(approval.approved_date, 'Not set')}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">Status</p>
+                    <p className="text-sm font-medium text-red-400">✗ Rejected</p>
                   </div>
                 </>
               )}
