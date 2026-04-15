@@ -20,20 +20,24 @@ export default function ProposalPreview({ proposal, onSend, onConvertToInvoice, 
     queryFn: () => base44.entities.Invoice.list(),
   });
 
-  // Determine eligibility
+  // Determine eligibility and if already converted
   const approval = approvals.find(a => a.proposal_id === proposal.id);
-  const alreadyConverted = invoices.some(i => i.proposal_id === proposal.id);
+  const linkedInvoice = invoices.find(i => i.client_id === proposal.client_id && i.campaign_id === proposal.campaign_id && Math.abs(i.total_amount - proposal.estimated_price) < 0.01);
+  const alreadyConverted = linkedInvoice !== undefined;
+  const isInvoiceCreated = proposal.status === 'invoice_created';
   
   const eligibility = {
-    approved: proposal.status === 'approved',
+    approved: proposal.status === 'approved' || proposal.status === 'invoice_created',
     approvalComplete: !approval || approval.approval_status === 'approved',
     notConverted: !alreadyConverted,
     notRejected: proposal.status !== 'rejected',
   };
 
-  const isEligible = eligibility.approved && eligibility.approvalComplete && eligibility.notConverted && eligibility.notRejected;
+  const isEligible = !isInvoiceCreated && eligibility.approved && eligibility.approvalComplete && eligibility.notConverted && eligibility.notRejected;
   
-  const eligibilityReason = !eligibility.approved 
+  const eligibilityReason = isInvoiceCreated
+    ? null
+    : !eligibility.approved 
     ? `Proposal must be approved (currently ${proposal.status})`
     : !eligibility.approvalComplete
     ? `Awaiting approval (status: ${approval?.approval_status})`
@@ -159,24 +163,35 @@ export default function ProposalPreview({ proposal, onSend, onConvertToInvoice, 
         <p className="text-xs text-muted-foreground pt-2">Payment Terms: {proposal.payment_terms}</p>
       </div>
 
-      {/* Invoice Eligibility Status */}
+      {/* Status Display */}
       <div className={cn(
         'glass-panel rounded-xl p-4 border',
-        isEligible 
+        isInvoiceCreated
+          ? 'border-emerald-500/30 bg-emerald-500/5'
+          : isEligible 
           ? 'border-emerald-500/30 bg-emerald-500/5' 
           : 'border-amber-500/30 bg-amber-500/5'
       )}>
         <div className="flex items-start gap-3">
-          {isEligible ? (
+          {isInvoiceCreated || isEligible ? (
             <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0 mt-0.5" />
           ) : (
             <AlertCircle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
           )}
           <div className="flex-1">
             <p className="font-medium text-foreground text-sm">
-              {isEligible ? 'Eligible for Invoice Conversion' : 'Not Eligible for Invoice'}
+              {isInvoiceCreated 
+                ? 'Invoice Created' 
+                : isEligible 
+                ? 'Eligible for Invoice Conversion' 
+                : 'Not Eligible for Invoice'}
             </p>
-            {eligibilityReason && (
+            {isInvoiceCreated && linkedInvoice && (
+              <p className="text-xs text-muted-foreground mt-1">
+                Invoice {linkedInvoice.invoice_number} created and ready for review
+              </p>
+            )}
+            {!isInvoiceCreated && eligibilityReason && (
               <p className="text-xs text-muted-foreground mt-1">{eligibilityReason}</p>
             )}
           </div>
@@ -194,7 +209,15 @@ export default function ProposalPreview({ proposal, onSend, onConvertToInvoice, 
             Send to Client
           </Button>
         )}
-        {proposal.status === 'approved' || proposal.status === 'invoice_created' ? (
+        {isInvoiceCreated && linkedInvoice ? (
+          <Button
+            disabled
+            className="flex-1 bg-emerald-600 gap-2"
+          >
+            <CheckCircle2 className="w-4 h-4" />
+            Invoice {linkedInvoice.invoice_number} Created
+          </Button>
+        ) : proposal.status === 'approved' ? (
           <Button
             onClick={handleConvert}
             disabled={!isEligible || conversionLoading}

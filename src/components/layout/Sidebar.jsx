@@ -14,6 +14,7 @@ const navItems = [
   { path: '/campaigns', icon: Megaphone, label: 'Campaigns' },
   { path: '/content-studio', icon: PenTool, label: 'Content Studio' },
   { path: '/video-studio', icon: Video, label: 'Video Studio' },
+  { path: '/ai-creative-studio', icon: Sparkles, label: 'AI Creative Studio' },
   { path: '/calendar', icon: Calendar, label: 'Calendar' },
   { path: '/inbox', icon: Inbox, label: 'Inbox' },
   { path: '/analytics', icon: BarChart3, label: 'Analytics' },

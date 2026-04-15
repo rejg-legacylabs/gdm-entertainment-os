@@ -14,6 +14,7 @@ import BrandWorkspace from '@/pages/BrandWorkspace';
 import Campaigns from '@/pages/Campaigns';
 import ContentStudio from '@/pages/ContentStudio';
 import VideoStudio from '@/pages/VideoStudio';
+import AICreativeStudio from '@/pages/AICreativeStudio';
 import CalendarPage from '@/pages/CalendarPage';
 import InboxPage from '@/pages/InboxPage';
 import Analytics from '@/pages/Analytics';
@@ -66,6 +67,7 @@ const AuthenticatedApp = () => {
         <Route path="/campaigns" element={<Campaigns />} />
         <Route path="/content-studio" element={<ContentStudio />} />
         <Route path="/video-studio" element={<VideoStudio />} />
+        <Route path="/ai-creative-studio" element={<AICreativeStudio />} />
         <Route path="/calendar" element={<CalendarPage />} />
         <Route path="/inbox" element={<InboxPage />} />
         <Route path="/analytics" element={<Analytics />} />

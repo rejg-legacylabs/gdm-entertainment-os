@@ -1,0 +1,227 @@
+{
+  "name": "GeneratedCreative",
+  "type": "object",
+  "properties": {
+    "campaign_id": {
+      "type": "string",
+      "description": "Associated campaign ID"
+    },
+    "campaign_name": {
+      "type": "string",
+      "description": "Campaign name"
+    },
+    "post_id": {
+      "type": "string",
+      "description": "Associated post ID (optional)"
+    },
+    "brand_id": {
+      "type": "string",
+      "description": "Brand ID"
+    },
+    "brand_name": {
+      "type": "string",
+      "description": "Brand name"
+    },
+    "creative_type": {
+      "type": "string",
+      "enum": [
+        "image_ad",
+        "branded_graphic",
+        "text_overlay_ad",
+        "promotional_post",
+        "event_flyer",
+        "quote_card",
+        "fundraising_graphic",
+        "carousel_slide",
+        "story_creative",
+        "reel_cover",
+        "youtube_thumbnail",
+        "linkedin_graphic",
+        "social_post"
+      ],
+      "description": "Type of creative"
+    },
+    "format": {
+      "type": "string",
+      "enum": [
+        "square",
+        "portrait",
+        "landscape",
+        "story",
+        "reel_cover",
+        "carousel",
+        "youtube_thumbnail",
+        "linkedin_banner"
+      ],
+      "description": "Format/aspect ratio"
+    },
+    "platform": {
+      "type": "string",
+      "enum": [
+        "instagram",
+        "facebook",
+        "tiktok",
+        "linkedin",
+        "youtube",
+        "twitter",
+        "multi"
+      ],
+      "description": "Target platform"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "URL to generated image"
+    },
+    "image_prompt": {
+      "type": "string",
+      "description": "AI prompt used to generate image"
+    },
+    "headline": {
+      "type": "string",
+      "description": "Generated headline"
+    },
+    "subheadline": {
+      "type": "string",
+      "description": "Generated subheadline"
+    },
+    "cta_line": {
+      "type": "string",
+      "description": "Call-to-action text"
+    },
+    "caption": {
+      "type": "string",
+      "description": "Full caption for posting"
+    },
+    "short_caption": {
+      "type": "string",
+      "description": "Short version of caption"
+    },
+    "long_caption": {
+      "type": "string",
+      "description": "Extended caption"
+    },
+    "hashtag_suggestions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Suggested hashtags"
+    },
+    "text_overlay": {
+      "type": "string",
+      "description": "Text to overlay on image"
+    },
+    "variations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "style": {
+            "type": "string",
+            "enum": [
+              "premium",
+              "bold",
+              "emotional",
+              "urgent",
+              "donor_focused",
+              "luxury",
+              "community_driven",
+              "corporate",
+              "entertainment"
+            ]
+          },
+          "image_url": {
+            "type": "string"
+          },
+          "caption": {
+            "type": "string"
+          },
+          "created_date": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "description": "Generated variations"
+    },
+    "source_material": {
+      "type": "object",
+      "properties": {
+        "source_type": {
+          "type": "string",
+          "enum": [
+            "url",
+            "transcript",
+            "video_id",
+            "campaign_brief",
+            "notes",
+            "uploaded_file"
+          ]
+        },
+        "source_url": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        }
+      },
+      "description": "Source material used for generation"
+    },
+    "approval_status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "pending_review",
+        "approved",
+        "rejected",
+        "changes_requested"
+      ],
+      "default": "draft",
+      "description": "Approval status"
+    },
+    "approved_by": {
+      "type": "string",
+      "description": "User who approved"
+    },
+    "approved_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When approved"
+    },
+    "ready_to_publish": {
+      "type": "boolean",
+      "default": false,
+      "description": "Ready for publishing"
+    },
+    "is_favorite": {
+      "type": "boolean",
+      "default": false,
+      "description": "Marked as favorite"
+    },
+    "performance_metrics": {
+      "type": "object",
+      "properties": {
+        "impressions": {
+          "type": "number"
+        },
+        "clicks": {
+          "type": "number"
+        },
+        "engagement": {
+          "type": "number"
+        }
+      },
+      "description": "Performance data if published"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Internal notes"
+    }
+  },
+  "required": [
+    "campaign_id",
+    "campaign_name",
+    "creative_type",
+    "format"
+  ]
+}
