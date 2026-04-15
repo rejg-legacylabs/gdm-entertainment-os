@@ -167,8 +167,13 @@ export default function QADashboard() {
     return { campaign, invoice, client };
   };
 
-  const passRate = validationTests.length > 0
-    ? Math.round((validationTests.filter(t => t.status === 'passed').length / validationTests.length) * 100)
+  // Calculate metrics from actual test records
+  const completedTests = validationTests.filter(t => t.status === 'passed' || t.status === 'failed');
+  const passedTests = validationTests.filter(t => t.status === 'passed').length;
+  const failedTests = validationTests.filter(t => t.status === 'failed').length;
+  const runningTests = validationTests.filter(t => t.status === 'running').length;
+  const passRate = completedTests.length > 0
+    ? Math.round((passedTests / completedTests.length) * 100)
     : 0;
 
   return (
@@ -183,9 +188,9 @@ export default function QADashboard() {
       <div className="grid sm:grid-cols-4 gap-4 mb-8">
         {[
           { label: 'Total Tests', value: validationTests.length, color: 'blue' },
-          { label: 'Passed', value: validationTests.filter(t => t.status === 'passed').length, color: 'emerald' },
-          { label: 'Failed', value: validationTests.filter(t => t.status === 'failed').length, color: 'red' },
-          { label: 'Pass Rate', value: `${passRate}%`, color: passRate >= 80 ? 'emerald' : 'amber' },
+          { label: 'Passed', value: passedTests, color: 'emerald' },
+          { label: 'Failed', value: failedTests, color: 'red' },
+          { label: 'Pass Rate', value: `${passRate}%`, color: passRate >= 80 ? 'emerald' : passRate > 0 ? 'amber' : 'slate' },
         ].map((stat, idx) => {
           const colors = {
             blue: 'bg-blue-500/10 text-blue-400 border-blue-500/30',
@@ -212,14 +217,14 @@ export default function QADashboard() {
       {/* Test Scenarios */}
       <div className="space-y-4">
         {scenarioDefinitions.map((scenario, idx) => {
-          const testStatus = getScenarioStatus(scenario.name);
           const test = validationTests.find(t => t.scenario_name === scenario.name);
+          const testStatus = test?.status || 'pending';
           const isExpanded = expandedScenario === scenario.name;
           const { campaign, invoice, client } = test ? getRelatedRecords(test) : {};
 
           const statusConfig = {
-            pending: { icon: Clock, color: 'slate', label: 'Pending' },
-            running: { icon: Clock, color: 'blue', label: 'Running' },
+            pending: { icon: Clock, color: 'slate', label: 'Not Run' },
+            running: { icon: Clock, color: 'blue', label: 'Running', spin: true },
             passed: { icon: CheckCircle2, color: 'emerald', label: 'Passed' },
             failed: { icon: AlertCircle, color: 'red', label: 'Failed' },
           };
@@ -244,13 +249,19 @@ export default function QADashboard() {
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
                       <h3 className="font-semibold text-foreground text-lg">{scenario.label}</h3>
-                      <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                      <span className={`text-xs px-2.5 py-1 rounded-full font-medium flex items-center gap-1.5 ${
                         testStatus === 'passed' ? 'bg-emerald-500/20 text-emerald-400' :
                         testStatus === 'failed' ? 'bg-red-500/20 text-red-400' :
                         testStatus === 'running' ? 'bg-blue-500/20 text-blue-400' :
                         'bg-slate-500/20 text-slate-400'
                       }`}>
+                        {testStatus === 'running' && <div className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse" />}
                         {config.label}
+                        {test && (
+                          <span className="text-xs opacity-75 ml-1">
+                            ({test.pass_count}✓ {test.fail_count}✗)
+                          </span>
+                        )}
                       </span>
                     </div>
                     <p className="text-sm text-muted-foreground">{scenario.description}</p>
