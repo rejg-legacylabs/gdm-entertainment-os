@@ -107,7 +107,16 @@ export default function ProposalStudio() {
           <ProposalPreview
             proposal={selectedProposal}
             onSend={() => sendProposal.mutate(selectedProposal.id)}
-            onConvertToInvoice={() => {}}
+            onConvertToInvoice={() => {
+              queryClient.invalidateQueries({ queryKey: ['proposals'] });
+              queryClient.invalidateQueries({ queryKey: ['invoices'] });
+              queryClient.invalidateQueries({ queryKey: ['launchGates'] });
+              setViewMode('list');
+            }}
+            onInvoiceCreated={() => {
+              queryClient.invalidateQueries({ queryKey: ['proposals'] });
+              queryClient.invalidateQueries({ queryKey: ['invoices'] });
+            }}
           />
         </div>
       ) : (

@@ -1,9 +1,73 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
-import { FileText, Send, DollarSign, Calendar } from 'lucide-react';
+import { FileText, Send, DollarSign, Calendar, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
-export default function ProposalPreview({ proposal, onSend, onConvertToInvoice }) {
+export default function ProposalPreview({ proposal, onSend, onConvertToInvoice, onInvoiceCreated }) {
+  const [conversionLoading, setConversionLoading] = useState(false);
+  const [conversionError, setConversionError] = useState(null);
+  
+  const { data: approvals = [] } = useQuery({
+    queryKey: ['client_approvals'],
+    queryFn: () => base44.entities.ClientApproval.list(),
+  });
+
+  const { data: invoices = [] } = useQuery({
+    queryKey: ['invoices'],
+    queryFn: () => base44.entities.Invoice.list(),
+  });
+
+  // Determine eligibility
+  const approval = approvals.find(a => a.proposal_id === proposal.id);
+  const alreadyConverted = invoices.some(i => i.proposal_id === proposal.id);
+  
+  const eligibility = {
+    approved: proposal.status === 'approved',
+    approvalComplete: !approval || approval.approval_status === 'approved',
+    notConverted: !alreadyConverted,
+    notRejected: proposal.status !== 'rejected',
+  };
+
+  const isEligible = eligibility.approved && eligibility.approvalComplete && eligibility.notConverted && eligibility.notRejected;
+  
+  const eligibilityReason = !eligibility.approved 
+    ? `Proposal must be approved (currently ${proposal.status})`
+    : !eligibility.approvalComplete
+    ? `Awaiting approval (status: ${approval?.approval_status})`
+    : !eligibility.notConverted
+    ? 'Already converted to invoice'
+    : !eligibility.notRejected
+    ? 'Rejected proposals cannot be converted'
+    : null;
+
+  const handleConvert = async () => {
+    if (!isEligible) return;
+    
+    setConversionLoading(true);
+    setConversionError(null);
+    
+    try {
+      const result = await base44.functions.invoke('convertProposalToInvoice', { 
+        proposalId: proposal.id 
+      });
+      
+      if (result.data.success) {
+        if (onInvoiceCreated) {
+          onInvoiceCreated(result.data.invoice);
+        }
+        if (onConvertToInvoice) {
+          onConvertToInvoice(result.data.invoice);
+        }
+      }
+    } catch (err) {
+      setConversionError(err.response?.data?.reason || err.message);
+    } finally {
+      setConversionLoading(false);
+    }
+  };
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -95,6 +159,30 @@ export default function ProposalPreview({ proposal, onSend, onConvertToInvoice }
         <p className="text-xs text-muted-foreground pt-2">Payment Terms: {proposal.payment_terms}</p>
       </div>
 
+      {/* Invoice Eligibility Status */}
+      <div className={cn(
+        'glass-panel rounded-xl p-4 border',
+        isEligible 
+          ? 'border-emerald-500/30 bg-emerald-500/5' 
+          : 'border-amber-500/30 bg-amber-500/5'
+      )}>
+        <div className="flex items-start gap-3">
+          {isEligible ? (
+            <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0 mt-0.5" />
+          ) : (
+            <AlertCircle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
+          )}
+          <div className="flex-1">
+            <p className="font-medium text-foreground text-sm">
+              {isEligible ? 'Eligible for Invoice Conversion' : 'Not Eligible for Invoice'}
+            </p>
+            {eligibilityReason && (
+              <p className="text-xs text-muted-foreground mt-1">{eligibilityReason}</p>
+            )}
+          </div>
+        </div>
+      </div>
+
       {/* Actions */}
       <div className="flex gap-3">
         {proposal.status === 'draft' && (
@@ -106,16 +194,39 @@ export default function ProposalPreview({ proposal, onSend, onConvertToInvoice }
             Send to Client
           </Button>
         )}
-        {proposal.status === 'approved' && (
+        {proposal.status === 'approved' || proposal.status === 'invoice_created' ? (
           <Button
-            onClick={onConvertToInvoice}
-            className="flex-1 bg-primary hover:bg-primary/90 gap-2"
+            onClick={handleConvert}
+            disabled={!isEligible || conversionLoading}
+            className="flex-1 bg-primary hover:bg-primary/90 gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            title={!isEligible ? eligibilityReason : 'Click to convert this proposal to an invoice'}
           >
-            <DollarSign className="w-4 h-4" />
-            Convert to Invoice
+            {conversionLoading ? (
+              <>
+                <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                Creating Invoice...
+              </>
+            ) : (
+              <>
+                <DollarSign className="w-4 h-4" />
+                Convert to Invoice
+              </>
+            )}
           </Button>
-        )}
+        ) : null}
       </div>
+
+      {/* Conversion Error */}
+      {conversionError && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="p-3 rounded-lg bg-red-500/10 border border-red-500/30 flex items-start gap-2"
+        >
+          <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
+          <p className="text-xs text-red-400">{conversionError}</p>
+        </motion.div>
+      )}
     </motion.div>
   );
 }

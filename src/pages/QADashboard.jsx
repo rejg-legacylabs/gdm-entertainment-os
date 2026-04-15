@@ -56,8 +56,23 @@ const scenarioDefinitions = [
     ],
   },
   {
+    name: 'invoice_conversion',
+    label: 'Scenario D: Proposal to Invoice Conversion',
+    description: 'Verify eligible proposals convert to invoices with correct data',
+    steps: [
+      'Proposal Created and Approved',
+      'Client Approval Received',
+      'Conversion Eligibility Checked',
+      'Invoice Created from Proposal',
+      'Invoice Number Generated',
+      'Totals Match Proposal',
+      'Launch Gate Updated',
+      'Proposal Status: Invoice Created',
+    ],
+  },
+  {
     name: 'client_isolation',
-    label: 'Scenario D: Client Isolation & Permissions',
+    label: 'Scenario E: Client Isolation & Permissions',
     description: 'Verify data isolation and permission boundaries',
     steps: [
       'Multiple Clients Created',
@@ -69,7 +84,7 @@ const scenarioDefinitions = [
   },
   {
     name: 'approval_flow',
-    label: 'Scenario E: Client Approval Flow',
+    label: 'Scenario F: Client Approval Flow',
     description: 'Test proposal approval and status propagation',
     steps: [
       'Campaign Created',
@@ -83,7 +98,7 @@ const scenarioDefinitions = [
   },
   {
     name: 'package_features',
-    label: 'Scenario F: Package Feature Toggles',
+    label: 'Scenario G: Package Feature Toggles',
     description: 'Verify feature toggles affect visibility and pricing',
     steps: [
       'Package Created with Features',
@@ -95,7 +110,7 @@ const scenarioDefinitions = [
   },
   {
     name: 'data_consistency',
-    label: 'Scenario G: Data Consistency Validation',
+    label: 'Scenario H: Data Consistency Validation',
     description: 'Verify linked records maintain consistency',
     steps: [
       'Proposal Total Matches Scope',
@@ -220,10 +235,20 @@ export default function QADashboard() {
         invoice_id: invoices.find(i => i.invoice_number === 'INV-002')?.id,
       } : {};
     },
+    invoice_conversion: () => {
+      const client = clients.find(c => c.name === 'TechStart Inc.');
+      const proposal = proposals.find(p => p.proposal_number === 'PROP-001' && p.status === 'approved');
+      return client && proposal ? {
+        client_id: client.id,
+        campaign_id: campaigns.find(c => c.brand_id === client.id)?.id,
+        proposal_id: proposal.id,
+        invoice_id: invoices.find(i => i.proposal_id === proposal.id)?.id,
+      } : {};
+    },
   };
 
   // Calculate metrics from actual test records - separated by state
-  const totalTests = scenarioDefinitions.length; // Total scenarios defined
+  const totalTests = 8; // Total scenarios defined (updated for invoice conversion)
   const notRunTests = validationTests.filter(t => t.status === 'pending').length;
   const runningTests = validationTests.filter(t => t.status === 'running').length;
   const completedTests = validationTests.filter(t => t.status === 'passed' || t.status === 'failed');

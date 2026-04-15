@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
-import { ArrowLeft, CheckCircle2, AlertCircle, MessageSquare, Calendar, FileText, DollarSign, Send, Clock } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, AlertCircle, MessageSquare, Calendar, FileText, DollarSign, Send, Clock, Eye, FileCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import ApprovalTimeline from '@/components/revenue-ops/ApprovalTimeline';
 import { formatDate, formatDateTime } from '@/lib/dateUtils';
+import { normalizeApprovalState, getApprovalStatusLabel, ApprovalSource, buildApprovalTimeline } from '@/lib/approvalStateValidator';
 
 export default function ApprovalDetailView({ approval, onBack }) {
   const queryClient = useQueryClient();
@@ -120,53 +121,116 @@ export default function ApprovalDetailView({ approval, onBack }) {
               </span>
             </div>
 
+            {/* Status and Source */}
+            <div className="mb-6 p-4 rounded-lg bg-secondary/30 border border-border/30">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-xs text-muted-foreground mb-2 uppercase tracking-widest">Status</p>
+                  <div className="flex items-center gap-2">
+                    <div className={`w-3 h-3 rounded-full ${
+                      statusLabel.color === 'emerald' ? 'bg-emerald-400' :
+                      statusLabel.color === 'amber' ? 'bg-amber-400' :
+                      statusLabel.color === 'blue' ? 'bg-blue-400' :
+                      'bg-red-400'
+                    }`}></div>
+                    <p className="font-semibold text-foreground">{statusLabel.label}</p>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">{statusLabel.description}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground mb-2 uppercase tracking-widest">Source</p>
+                  <p className="text-sm font-medium text-foreground capitalize">
+                    {normalizedApproval.approval_source === ApprovalSource.CLIENT_DRIVEN
+                      ? 'Client-Driven'
+                      : normalizedApproval.approval_source === ApprovalSource.INTERNAL_OVERRIDE
+                      ? 'Internal Override'
+                      : 'Admin Approval'}
+                  </p>
+                </div>
+              </div>
+            </div>
+
             {/* Details Grid */}
-            <div className="grid sm:grid-cols-3 gap-4 py-4 border-y border-border/30">
+            <div className="grid sm:grid-cols-4 gap-4 py-4 border-y border-border/30">
               <div>
                 <p className="text-xs text-muted-foreground mb-1">Approval Type</p>
                 <p className="text-sm font-medium text-foreground capitalize">{approval.approval_type}</p>
               </div>
               <div>
                 <p className="text-xs text-muted-foreground mb-1">Requested</p>
-                <p className="text-sm font-medium text-foreground">{formatDate(approval.requested_date, 'Not requested')}</p>
+                <p className="text-sm font-medium text-foreground">{formatDate(normalizedApproval.requested_date, 'Not requested')}</p>
               </div>
               <div>
                 <p className="text-xs text-muted-foreground mb-1">Viewed</p>
-                <p className="text-sm font-medium text-foreground">{approval.viewed_date ? formatDate(approval.viewed_date) : '—'}</p>
+                <p className="text-sm font-medium text-foreground">{normalizedApproval.viewed_date ? formatDate(normalizedApproval.viewed_date) : '—'}</p>
               </div>
-              {approval.approved_date && (
+              <div>
+                <p className="text-xs text-muted-foreground mb-1">Status Change</p>
+                <p className="text-sm font-medium text-foreground">{normalizedApproval.updated_date ? formatDate(normalizedApproval.updated_date) : '—'}</p>
+              </div>
+              {normalizedApproval.approved_date && normalizedApproval.approval_status === 'approved' && (
                 <>
                   <div>
                     <p className="text-xs text-muted-foreground mb-1">Approved By</p>
-                    <p className="text-sm font-medium text-foreground">{approval.approved_by || 'Client'}</p>
+                    <p className="text-sm font-medium text-foreground">{normalizedApproval.approved_by || 'Client'}</p>
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground mb-1">Approved Date</p>
-                    <p className="text-sm font-medium text-emerald-400">{formatDate(approval.approved_date)}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground mb-1">Status</p>
-                    <p className="text-sm font-medium text-emerald-400">✓ Finalized</p>
+                    <p className="text-sm font-medium text-emerald-400">{formatDate(normalizedApproval.approved_date)}</p>
                   </div>
                 </>
               )}
-              {approval.approval_status === 'rejected' && (
+              {normalizedApproval.approval_status === 'rejected' && (
                 <>
                   <div>
                     <p className="text-xs text-muted-foreground mb-1">Rejected By</p>
-                    <p className="text-sm font-medium text-red-400">{approval.approved_by || 'Client'}</p>
+                    <p className="text-sm font-medium text-red-400">{normalizedApproval.approved_by || 'Client'}</p>
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground mb-1">Rejected Date</p>
-                    <p className="text-sm font-medium text-red-400">{formatDate(approval.approved_date, 'Not set')}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground mb-1">Status</p>
-                    <p className="text-sm font-medium text-red-400">✗ Rejected</p>
+                    <p className="text-sm font-medium text-red-400">{formatDate(normalizedApproval.approved_date, 'Not set')}</p>
                   </div>
                 </>
               )}
             </div>
+
+            {/* Timeline Events */}
+            {timeline.length > 0 && (
+              <div className="mt-6">
+                <h3 className="font-semibold text-foreground mb-4">Approval Timeline</h3>
+                <div className="space-y-3">
+                  {timeline.map((event, idx) => {
+                    const IconMap = {
+                      Send: Send,
+                      Eye: Eye,
+                      MessageSquare: MessageSquare,
+                      CheckCircle2: CheckCircle2,
+                      AlertCircle: AlertCircle,
+                    };
+                    const Icon = IconMap[event.icon] || Clock;
+                    const colorClass = `text-${event.color}-400`;
+                    
+                    return (
+                      <motion.div
+                        key={idx}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: idx * 0.05 }}
+                        className="flex items-start gap-3 p-3 rounded-lg bg-secondary/30"
+                      >
+                        <Icon className={`w-4 h-4 mt-1 flex-shrink-0 text-${event.color}-400`} />
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-foreground">{event.label}</p>
+                          <p className="text-xs text-muted-foreground mt-0.5">{formatDate(event.date)}</p>
+                          {event.details && <p className="text-xs text-muted-foreground mt-1 italic">{event.details}</p>}
+                          {event.user && <p className="text-xs text-muted-foreground mt-0.5">By: {event.user}</p>}
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </motion.div>
 
           {/* Proposal Details */}

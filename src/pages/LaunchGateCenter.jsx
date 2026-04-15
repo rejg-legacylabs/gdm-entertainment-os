@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Lock, CheckCircle2, AlertCircle, Clock } from 'lucide-react';
+import { Lock, CheckCircle2, AlertCircle, Clock, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import SectionHeader from '@/components/ui-premium/SectionHeader';
 import LaunchGateReadiness from '@/components/revenue-ops/LaunchGateReadiness';
@@ -70,25 +70,66 @@ export default function LaunchGateCenter() {
     },
   });
 
-  const getGateStatus = (gate) => {
+  const getGateStatus = (gate, campaign) => {
     const issues = [];
 
+    // Check approval
     if (gate.approval_required && gate.approval_status !== 'approved') {
-      issues.push({ type: 'approval', severity: 'high', label: 'Awaiting client approval' });
+      issues.push({ 
+        type: 'approval', 
+        severity: 'critical', 
+        label: 'Client approval pending',
+        reason: `Approval status: ${gate.approval_status}`
+      });
     }
 
+    // Check payment
     if (gate.payment_required && gate.payment_status !== 'paid') {
-      issues.push({ type: 'payment', severity: 'high', label: `Payment pending: $${(gate.total_due - gate.amount_paid).toLocaleString()}` });
+      const amountDue = (gate.total_due || 0) - (gate.amount_paid || 0);
+      issues.push({ 
+        type: 'payment', 
+        severity: 'critical', 
+        label: 'Payment required',
+        reason: `$${amountDue.toLocaleString()} due` 
+      });
     }
 
+    // Check content
+    if (!campaign?.total_posts || campaign.total_posts === 0) {
+      issues.push({ 
+        type: 'content', 
+        severity: 'critical', 
+        label: 'No posts scheduled',
+        reason: 'Campaign has no content ready'
+      });
+    }
+
+    // Check schedule
+    if (!campaign?.start_date) {
+      issues.push({ 
+        type: 'schedule', 
+        severity: 'critical', 
+        label: 'Schedule not set',
+        reason: 'No campaign start date'
+      });
+    }
+
+    // Check manual block
     if (gate.blocked_reason) {
-      issues.push({ type: 'blocked', severity: 'critical', label: gate.blocked_reason });
+      issues.push({ 
+        type: 'blocked', 
+        severity: 'critical', 
+        label: 'Campaign blocked',
+        reason: gate.blocked_reason
+      });
     }
 
+    const criticalIssues = issues.filter(i => i.severity === 'critical');
+    
     return {
-      isReady: issues.filter(i => i.severity !== 'blocked').length === 0 && gate.can_launch,
-      issueCount: issues.length,
-      issues,
+      isReady: criticalIssues.length === 0 && gate.can_launch,
+      issueCount: criticalIssues.length,
+      issues: criticalIssues,
     };
   };
 
@@ -146,7 +187,7 @@ export default function LaunchGateCenter() {
         ) : (
           launchGates.map((gate, idx) => {
             const campaign = campaigns.find(c => c.id === gate.campaign_id);
-            const status = getGateStatus(gate);
+            const status = getGateStatus(gate, campaign);
             const isExpanded = expandedGate === gate.id;
 
             return (
@@ -208,21 +249,17 @@ export default function LaunchGateCenter() {
                         {!status.isReady && status.issueCount > 0 && (
                           <div className="flex gap-3 pt-4 border-t border-border/30">
                             <Button
-                              onClick={() => clearLaunchGate.mutate(gate.id)}
-                              disabled={status.issueCount > 0}
+                              onClick={() => setBlockerModal({ 
+                                gateId: gate.id, 
+                                issues: status.issues,
+                                campaign: gate.campaign_name 
+                              })}
+                              disabled={status.issueCount === 0}
                               className="flex-1 bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
-                              title={status.issueCount > 0 ? `Cannot launch: ${status.issueCount} unresolved issue(s)` : ''}
+                              title={status.issueCount > 0 ? `${status.issueCount} blocker(s) must be resolved` : 'Ready to launch'}
                             >
-                              Clear Launch Gate
+                              View Blockers
                             </Button>
-                            {!gate.blocked_reason && (
-                              <Button
-                                variant="outline"
-                                onClick={() => blockLaunchGate.mutate({ gateId: gate.id, reason: 'Manual hold' })}
-                              >
-                                Block
-                              </Button>
-                            )}
                           </div>
                         )}
                       </div>
@@ -249,32 +286,59 @@ export default function LaunchGateCenter() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               onClick={(e) => e.stopPropagation()}
-              className="glass-panel rounded-xl p-6 max-w-md w-full border border-red-500/30 bg-red-500/5"
+              className="glass-panel rounded-xl p-6 max-w-lg w-full border border-red-500/30 bg-red-500/5"
             >
               <div className="flex items-start gap-3 mb-4">
-                <AlertCircle className="w-6 h-6 text-red-400 flex-shrink-0" />
-                <div>
-                  <h3 className="font-semibold text-foreground">Cannot Launch Campaign</h3>
+                <Lock className="w-6 h-6 text-red-400 flex-shrink-0" />
+                <div className="flex-1">
+                  <h3 className="font-semibold text-foreground text-lg">Campaign Launch Blocked</h3>
                   <p className="text-sm text-muted-foreground mt-1">{blockerModal.campaign}</p>
                 </div>
               </div>
               
-              <div className="space-y-2 mb-6 p-4 rounded-lg bg-secondary/30">
+              <div className="space-y-3 mb-6">
                 {blockerModal.issues.map((issue, idx) => (
-                  <div key={idx} className="flex items-start gap-2">
-                    <AlertCircle className="w-4 h-4 text-red-400 mt-0.5 flex-shrink-0" />
-                    <span className="text-sm text-foreground">{issue.label}</span>
-                  </div>
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: idx * 0.05 }}
+                    className="p-3 rounded-lg bg-red-500/10 border border-red-500/20"
+                  >
+                    <div className="flex items-start gap-2">
+                      <AlertCircle className="w-4 h-4 text-red-400 mt-0.5 flex-shrink-0" />
+                      <div className="flex-1">
+                        <p className="font-medium text-red-400 text-sm">{issue.label}</p>
+                        {issue.reason && (
+                          <p className="text-xs text-muted-foreground mt-1">{issue.reason}</p>
+                        )}
+                      </div>
+                    </div>
+                  </motion.div>
                 ))}
               </div>
 
-              <Button
-                onClick={() => setBlockerModal(null)}
-                className="w-full"
-                variant="outline"
-              >
-                Dismiss
-              </Button>
+              <div className="flex gap-3">
+                <Button
+                  onClick={() => setBlockerModal(null)}
+                  variant="outline"
+                  className="flex-1"
+                >
+                  Acknowledge
+                </Button>
+                <Button
+                  disabled
+                  className="flex-1 bg-primary/50 cursor-not-allowed opacity-50"
+                  title="Super Admin override required"
+                >
+                  <Lock className="w-4 h-4 mr-2" />
+                  Admin Override
+                </Button>
+              </div>
+              
+              <p className="text-xs text-muted-foreground mt-4 text-center">
+                Only Super Admin can override hard blockers. Resolve issues above to launch.
+              </p>
             </motion.div>
           </motion.div>
         )}
