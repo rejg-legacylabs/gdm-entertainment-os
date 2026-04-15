@@ -1,18 +1,11 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { motion } from 'framer-motion';
-import { PenTool, Sparkles, Loader2, Copy, RefreshCw, Wand2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Label } from '@/components/ui/label';
+import { motion, AnimatePresence } from 'framer-motion';
+import { PenTool } from 'lucide-react';
 import AIInsightPanel from '@/components/ui-premium/AIInsightPanel';
-import { toast } from 'sonner';
-
-const platforms = ['instagram', 'facebook', 'linkedin', 'tiktok', 'youtube', 'twitter'];
-const contentTypes = ['caption', 'event_promotion', 'donor_campaign', 'fundraising', 'nonprofit_storytelling', 'housing_awareness', 'recruiting', 'job_opportunity', 'testimonial', 'community_engagement', 'call_to_action', 'hook_variation', 'carousel_idea', 'reel_idea', 'story_sequence'];
-const tones = ['bold', 'premium', 'compassionate', 'inspiring', 'empowering', 'direct', 'viral', 'professional', 'casual', 'urgent'];
+import ContentGeneratorForm from '@/components/content-studio/ContentGeneratorForm';
+import GeneratedContentCard from '@/components/content-studio/GeneratedContentCard';
 
 export default function ContentStudio() {
   const [brand, setBrand] = useState('');
@@ -97,106 +90,37 @@ Original:\n${generated}`;
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Generator */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="glass-panel rounded-xl p-6">
-            <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
-              <Wand2 className="w-4 h-4 text-primary" /> Content Generator
-            </h3>
-
-            <div className="grid sm:grid-cols-2 gap-4 mb-4">
-              <div>
-                <Label className="text-xs text-muted-foreground">Brand</Label>
-                <Select value={brand} onValueChange={setBrand}>
-                  <SelectTrigger className="bg-secondary border-border mt-1"><SelectValue placeholder="Select brand" /></SelectTrigger>
-                  <SelectContent>
-                    {brands.map(b => <SelectItem key={b.id} value={b.name}>{b.name}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label className="text-xs text-muted-foreground">Platform</Label>
-                <Select value={platform} onValueChange={setPlatform}>
-                  <SelectTrigger className="bg-secondary border-border mt-1"><SelectValue placeholder="Select platform" /></SelectTrigger>
-                  <SelectContent>
-                    {platforms.map(p => <SelectItem key={p} value={p} className="capitalize">{p}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label className="text-xs text-muted-foreground">Content Type</Label>
-                <Select value={contentType} onValueChange={setContentType}>
-                  <SelectTrigger className="bg-secondary border-border mt-1"><SelectValue placeholder="Select type" /></SelectTrigger>
-                  <SelectContent>
-                    {contentTypes.map(t => <SelectItem key={t} value={t} className="capitalize">{t.replace(/_/g, ' ')}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label className="text-xs text-muted-foreground">Tone</Label>
-                <Select value={tone} onValueChange={setTone}>
-                  <SelectTrigger className="bg-secondary border-border mt-1"><SelectValue placeholder="Select tone" /></SelectTrigger>
-                  <SelectContent>
-                    {tones.map(t => <SelectItem key={t} value={t} className="capitalize">{t}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div className="mb-4">
-              <Label className="text-xs text-muted-foreground">Topic / Brief</Label>
-              <Textarea
-                className="bg-secondary border-border mt-1 min-h-[100px]"
-                placeholder="Describe what this post should be about..."
-                value={topic}
-                onChange={e => setTopic(e.target.value)}
-              />
-            </div>
-
-            <Button onClick={generateContent} disabled={loading || !brand || !platform || !topic} className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
-              {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Sparkles className="w-4 h-4 mr-2" />}
-              Generate Content
-            </Button>
-          </div>
+          <ContentGeneratorForm
+            brand={brand}
+            setBrand={setBrand}
+            platform={platform}
+            setPlatform={setPlatform}
+            contentType={contentType}
+            setContentType={setContentType}
+            tone={tone}
+            setTone={setTone}
+            topic={topic}
+            setTopic={setTopic}
+            onGenerate={generateContent}
+            loading={loading}
+            brands={brands}
+            selectedBrand={selectedBrand}
+          />
 
           {/* Output */}
-          {generated && (
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="glass-panel rounded-xl p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-semibold text-foreground">Generated Content</h3>
-                <div className="flex gap-2">
-                  <Button size="sm" variant="ghost" onClick={copyToClipboard} className="text-muted-foreground">
-                    <Copy className="w-4 h-4 mr-1" /> Copy
-                  </Button>
-                  <Button size="sm" variant="ghost" onClick={generateContent} className="text-muted-foreground">
-                    <RefreshCw className="w-4 h-4 mr-1" /> Regenerate
-                  </Button>
-                </div>
-              </div>
-              <div className="bg-secondary/50 rounded-lg p-4 mb-4 whitespace-pre-wrap text-sm text-foreground leading-relaxed">
-                {generated}
-              </div>
-
-              {/* Refine Tools */}
-              <div>
-                <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
-                  <Sparkles className="w-3 h-3 text-primary" /> AI Refine Tools
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {refineOptions.map(opt => (
-                    <Button
-                      key={opt.label}
-                      size="sm"
-                      variant="outline"
-                      className="text-xs border-border text-muted-foreground hover:text-primary hover:border-primary/30"
-                      onClick={() => refineContent(opt.instruction)}
-                      disabled={loading}
-                    >
-                      {opt.label}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-          )}
+          <AnimatePresence>
+            {generated && (
+              <GeneratedContentCard
+                content={generated}
+                platform={platform}
+                brand={brand}
+                tone={tone}
+                onRegenerate={generateContent}
+                onRefine={refineContent}
+                loading={loading}
+              />
+            )}
+          </AnimatePresence>
         </div>
 
         {/* AI Panel */}
