@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PenTool } from 'lucide-react';
+import { toast } from 'sonner';
 import AIInsightPanel from '@/components/ui-premium/AIInsightPanel';
 import ContentGeneratorForm from '@/components/content-studio/ContentGeneratorForm';
 import GeneratedContentCard from '@/components/content-studio/GeneratedContentCard';
