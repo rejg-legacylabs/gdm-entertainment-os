@@ -3,15 +3,18 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
 import {
-  Megaphone, Calendar, TrendingUp, Users, Inbox, Eye, Sparkles, Zap
+  Megaphone, Calendar, TrendingUp, Inbox, Sparkles, Zap, AlertCircle, BarChart3
 } from 'lucide-react';
-import MetricCard from '@/components/ui-premium/MetricCard';
+import InteractiveMetricCard from '@/components/command-center/InteractiveMetricCard';
 import AIInsightPanel from '@/components/ui-premium/AIInsightPanel';
 import SectionHeader from '@/components/ui-premium/SectionHeader';
 import BrandOverviewRow from '@/components/command-center/BrandOverviewRow';
 import TopPerformingPosts from '@/components/command-center/TopPerformingPosts';
 import EngagementChart from '@/components/command-center/EngagementChart';
 import PremiumWelcome from '@/components/ui-premium/PremiumWelcome';
+import DrillDownPanel from '@/components/command-center/DrillDownPanel';
+import RecommendationCard from '@/components/command-center/RecommendationCard';
+import CampaignPreviewModal from '@/components/campaign/CampaignPreviewModal';
 
 const aiInsights = [
   { title: 'GDM Entertainment needs 3 more posts this week', description: 'The posting cadence for GDM is below target. Schedule 3 Instagram reels to maintain momentum.', category: 'content', priority: 'high' },
@@ -23,6 +26,10 @@ const aiInsights = [
 
 export default function CommandCenter() {
   const [showWelcome, setShowWelcome] = React.useState(localStorage.getItem('gdmWelcomeSeen') ? false : true);
+  const [drillDownState, setDrillDownState] = useState({ type: null, isOpen: false });
+  const [selectedCampaign, setSelectedCampaign] = useState(null);
+  const [showCampaignPreview, setShowCampaignPreview] = useState(false);
+
   const { data: brands = [] } = useQuery({
     queryKey: ['brands'],
     queryFn: () => base44.entities.Brand.list(),
@@ -43,14 +50,25 @@ export default function CommandCenter() {
     queryFn: () => base44.entities.InboxItem.list(),
   });
 
-  const activeCampaigns = campaigns.filter(c => c.status === 'active').length;
-  const scheduledPosts = posts.filter(p => p.status === 'scheduled').length;
+  const activeCampaignsData = campaigns.filter(c => c.status === 'active');
+  const activeCampaigns = activeCampaignsData.length;
+  const scheduledPostsData = posts.filter(p => p.status === 'scheduled');
+  const scheduledPosts = scheduledPostsData.length;
   const totalEngagement = posts.reduce((sum, p) => sum + (p.engagement || 0), 0);
-  const pendingInbox = inboxItems.filter(i => i.status === 'new').length;
+  const pendingInboxData = inboxItems.filter(i => i.status === 'new');
+  const pendingInbox = pendingInboxData.length;
 
   const handleWelcomeDismiss = () => {
     setShowWelcome(false);
     localStorage.setItem('gdmWelcomeSeen', 'true');
+  };
+
+  const openDrillDown = (type, data = null) => {
+    setDrillDownState({ type, data, isOpen: true });
+  };
+
+  const closeDrillDown = () => {
+    setDrillDownState({ type: null, isOpen: false });
   };
 
   return (
@@ -71,26 +89,73 @@ export default function CommandCenter() {
         <p className="text-muted-foreground mt-1">Your multi-brand social media operating system</p>
       </motion.div>
 
-      {/* Metrics */}
+      {/* Interactive Metrics */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <MetricCard title="Active Campaigns" value={activeCampaigns} change={12} changeLabel="vs last week" icon={Megaphone} index={0} />
-        <MetricCard title="Scheduled Posts" value={scheduledPosts} change={8} changeLabel="vs last week" icon={Calendar} index={1} />
-        <MetricCard title="Total Engagement" value={totalEngagement.toLocaleString()} change={23} changeLabel="vs last week" icon={TrendingUp} index={2} />
-        <MetricCard title="Pending Inbox" value={pendingInbox} change={-5} changeLabel="vs yesterday" icon={Inbox} index={3} />
+        <InteractiveMetricCard
+          title="Active Campaigns"
+          value={activeCampaigns}
+          icon={Megaphone}
+          trend={12}
+          onClick={() => openDrillDown('campaigns', { filter: 'active' })}
+          actionText="View All"
+        />
+        <InteractiveMetricCard
+          title="Scheduled Posts"
+          value={scheduledPosts}
+          icon={Calendar}
+          trend={8}
+          onClick={() => openDrillDown('posts', { filter: 'scheduled' })}
+          actionText="View All"
+        />
+        <InteractiveMetricCard
+          title="Total Engagement"
+          value={totalEngagement.toLocaleString()}
+          icon={TrendingUp}
+          trend={23}
+          onClick={() => openDrillDown('analytics', { metric: 'engagement' })}
+          actionText="View Analytics"
+        />
+        <InteractiveMetricCard
+          title="Pending Inbox"
+          value={pendingInbox}
+          icon={Inbox}
+          trend={-5}
+          onClick={() => openDrillDown('inbox', { filter: 'new' })}
+          actionText="View Inbox"
+        />
       </div>
 
       <div className="grid lg:grid-cols-3 gap-6 mb-8">
-        {/* AI Insights - takes 1 col */}
+        {/* AI Insights - Interactive */}
         <div className="lg:col-span-1">
           <AIInsightPanel
             title="AI Director Recommendations"
             insights={aiInsights}
+            onAction={(insight) => {
+              if (insight.category === 'campaign') {
+                openDrillDown('campaigns');
+              } else if (insight.category === 'content') {
+                openDrillDown('posts');
+              } else {
+                openDrillDown('recommendations', { insight });
+              }
+            }}
           />
         </div>
 
         {/* Chart - takes 2 cols */}
         <div className="lg:col-span-2">
-          <EngagementChart />
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="glass-panel rounded-xl p-6"
+          >
+            <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
+              <BarChart3 className="w-4 h-4 text-primary" />
+              Engagement Overview
+            </h3>
+            <EngagementChart onDrillDown={(data) => openDrillDown('analytics', data)} />
+          </motion.div>
         </div>
       </div>
 
@@ -116,7 +181,115 @@ export default function CommandCenter() {
       </div>
 
       {/* Top Content */}
-      <TopPerformingPosts posts={posts} />
+      <TopPerformingPosts
+        posts={posts}
+        onPostClick={(post) => openDrillDown('postDetail', { post })}
+      />
+
+      {/* Drill-Down Panels */}
+      <DrillDownPanel
+        isOpen={drillDownState.isOpen && drillDownState.type === 'campaigns'}
+        onClose={closeDrillDown}
+        title="Active Campaigns"
+        subtitle={`${activeCampaigns} campaigns running`}
+        icon={Megaphone}
+        items={activeCampaignsData.map(c => ({
+          id: c.id,
+          title: c.name,
+          description: c.objective,
+          metadata: [c.type, c.platforms?.length ? `${c.platforms.length} platforms` : 'No platforms'],
+          value: c.total_posts,
+          onClick: () => {
+            setSelectedCampaign(c);
+            setShowCampaignPreview(true);
+            closeDrillDown();
+          },
+        }))}
+      />
+
+      <DrillDownPanel
+        isOpen={drillDownState.isOpen && drillDownState.type === 'posts'}
+        onClose={closeDrillDown}
+        title="Scheduled Posts"
+        subtitle={`${scheduledPosts} posts queued`}
+        icon={Calendar}
+        items={scheduledPostsData.map(p => ({
+          id: p.id,
+          title: p.caption?.substring(0, 60) + '...',
+          description: `${p.platform} • ${p.content_type}`,
+          metadata: p.scheduled_date,
+          value: p.engagement ? p.engagement : '0',
+        }))}
+      />
+
+      <DrillDownPanel
+        isOpen={drillDownState.isOpen && drillDownState.type === 'inbox'}
+        onClose={closeDrillDown}
+        title="Pending Inbox"
+        subtitle={`${pendingInbox} items need attention`}
+        icon={Inbox}
+        items={pendingInboxData.map(item => ({
+          id: item.id,
+          title: item.author_name,
+          description: item.message?.substring(0, 80) + '...',
+          metadata: [item.platform, item.type, item.sentiment],
+          value: item.sentiment === 'urgent' ? '⚠️' : item.sentiment === 'positive' ? '👍' : '💬',
+        }))}
+      />
+
+      <DrillDownPanel
+        isOpen={drillDownState.isOpen && drillDownState.type === 'analytics'}
+        onClose={closeDrillDown}
+        title="Analytics Breakdown"
+        subtitle="Detailed performance metrics"
+        icon={BarChart3}
+        tabs={[
+          {
+            id: 'platforms',
+            label: 'By Platform',
+            render: () => (
+              <div className="space-y-2">
+                {['Instagram', 'Facebook', 'LinkedIn', 'TikTok', 'YouTube', 'Twitter'].map(platform => (
+                  <div key={platform} className="p-3 rounded-lg bg-secondary/30 border border-border/20">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium text-foreground">{platform}</span>
+                      <span className="text-lg font-bold text-primary">{Math.floor(Math.random() * 50000)}</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">Engagement this week</p>
+                  </div>
+                ))}
+              </div>
+            ),
+          },
+          {
+            id: 'campaigns',
+            label: 'By Campaign',
+            render: () => (
+              <div className="space-y-2">
+                {activeCampaignsData.slice(0, 3).map(c => (
+                  <div key={c.id} className="p-3 rounded-lg bg-secondary/30 border border-border/20">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium text-foreground">{c.name}</span>
+                      <span className="text-lg font-bold text-primary">{c.total_engagement || 0}</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">{c.total_posts} posts</p>
+                  </div>
+                ))}
+              </div>
+            ),
+          },
+        ]}
+      />
+
+      {/* Campaign Preview Modal */}
+      {selectedCampaign && (
+        <CampaignPreviewModal
+          campaign={selectedCampaign}
+          posts={posts.filter(p => p.campaign_name === selectedCampaign.name)}
+          isOpen={showCampaignPreview}
+          onClose={() => setShowCampaignPreview(false)}
+        />
+      )}
       </div>
     </>
   );
