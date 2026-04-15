@@ -1,0 +1,57 @@
+{
+  "name": "CommentModeration",
+  "type": "object",
+  "properties": {
+    "comment_id": {
+      "type": "string",
+      "description": "Comment being moderated"
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "approve",
+        "hide",
+        "delete",
+        "escalate",
+        "mute_author",
+        "report_abuse"
+      ],
+      "description": "Moderation action"
+    },
+    "reason": {
+      "type": "string",
+      "description": "Reason for action"
+    },
+    "actioned_by": {
+      "type": "string",
+      "description": "User who took action"
+    },
+    "actioned_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When action was taken"
+    },
+    "escalated_to": {
+      "type": "string",
+      "description": "Escalated user (if escalated)"
+    },
+    "is_flagged_for_legal": {
+      "type": "boolean",
+      "default": false,
+      "description": "Flagged for legal review"
+    },
+    "is_flagged_for_client": {
+      "type": "boolean",
+      "default": false,
+      "description": "Flagged as client-sensitive"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Moderation notes"
+    }
+  },
+  "required": [
+    "comment_id",
+    "action"
+  ]
+}

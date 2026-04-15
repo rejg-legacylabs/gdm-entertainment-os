@@ -1,0 +1,93 @@
+{
+  "name": "PublishingError",
+  "type": "object",
+  "properties": {
+    "publishing_log_id": {
+      "type": "string",
+      "description": "Associated publishing log ID"
+    },
+    "post_id": {
+      "type": "string",
+      "description": "Associated post ID"
+    },
+    "platform": {
+      "type": "string",
+      "enum": [
+        "instagram",
+        "facebook",
+        "linkedin",
+        "tiktok",
+        "youtube",
+        "twitter"
+      ],
+      "description": "Platform"
+    },
+    "error_type": {
+      "type": "string",
+      "enum": [
+        "invalid_media_format",
+        "disconnected_account",
+        "expired_token",
+        "missing_permissions",
+        "api_rejection",
+        "rate_limit",
+        "platform_validation",
+        "network_error",
+        "unknown"
+      ],
+      "description": "Type of error"
+    },
+    "error_message": {
+      "type": "string",
+      "description": "Detailed error message from platform"
+    },
+    "error_code": {
+      "type": "string",
+      "description": "Platform-specific error code"
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "warning",
+        "error",
+        "critical"
+      ],
+      "default": "error",
+      "description": "Error severity"
+    },
+    "is_retryable": {
+      "type": "boolean",
+      "default": true,
+      "description": "Can this be retried"
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When error occurred"
+    },
+    "resolved": {
+      "type": "boolean",
+      "default": false,
+      "description": "Has this error been resolved"
+    },
+    "resolved_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When resolved"
+    },
+    "resolved_by": {
+      "type": "string",
+      "description": "User who resolved"
+    },
+    "resolution_notes": {
+      "type": "string",
+      "description": "How it was resolved"
+    }
+  },
+  "required": [
+    "publishing_log_id",
+    "post_id",
+    "error_type",
+    "error_message"
+  ]
+}

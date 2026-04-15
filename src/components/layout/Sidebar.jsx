@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard, Building2, Megaphone, PenTool, Video, Calendar,
   Inbox, BarChart3, FolderOpen, Brain, Settings, ChevronLeft, ChevronRight,
-  Sparkles, Crown, DollarSign, FileText, Lock, Zap, CheckCircle2
+  Sparkles, Crown, DollarSign, FileText, Lock, Zap, CheckCircle2, AlertCircle
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -31,7 +31,13 @@ const revenueOpsItems = [
   { path: '/qa-dashboard', icon: Zap, label: 'QA & Validation' },
 ];
 
-const allNavItems = [...navItems, ...revenueOpsItems, { path: '/settings', icon: Settings, label: 'Settings' }];
+const executionOpsItems = [
+  { path: '/publishing-queue', icon: PenTool, label: 'Publishing Queue' },
+  { path: '/failed-posts', icon: AlertCircle, label: 'Failed Posts' },
+  { path: '/comment-ops', icon: Inbox, label: 'Comment Ops' },
+];
+
+const allNavItems = [...navItems, ...revenueOpsItems, ...executionOpsItems, { path: '/settings', icon: Settings, label: 'Settings' }];
 
 export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
@@ -71,14 +77,20 @@ export default function Sidebar() {
           const isActive = location.pathname === item.path ||
             (item.path !== '/' && location.pathname.startsWith(item.path));
           
-          // Add divider before Revenue Ops
+          // Add divider before sections
           const isRevenueOpsStart = item.path === '/pricing-studio';
+          const isExecutionOpsStart = item.path === '/publishing-queue';
           
           return (
             <div key={item.path}>
               {isRevenueOpsStart && !collapsed && (
                 <div className="px-3 py-2 mt-2">
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Revenue Ops</p>
+                </div>
+              )}
+              {isExecutionOpsStart && !collapsed && (
+                <div className="px-3 py-2 mt-2">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Execution Ops</p>
                 </div>
               )}
               <Link to={item.path}>

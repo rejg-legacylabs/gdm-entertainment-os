@@ -1,0 +1,107 @@
+{
+  "name": "CommentReply",
+  "type": "object",
+  "properties": {
+    "comment_id": {
+      "type": "string",
+      "description": "Associated comment ID"
+    },
+    "platform_reply_id": {
+      "type": "string",
+      "description": "Reply ID from platform (if already sent)"
+    },
+    "platform": {
+      "type": "string",
+      "enum": [
+        "instagram",
+        "facebook",
+        "linkedin",
+        "tiktok",
+        "youtube",
+        "twitter"
+      ],
+      "description": "Platform"
+    },
+    "reply_text": {
+      "type": "string",
+      "description": "Reply text"
+    },
+    "suggested_by_ai": {
+      "type": "boolean",
+      "default": false,
+      "description": "Was this AI-drafted"
+    },
+    "ai_draft": {
+      "type": "string",
+      "description": "Original AI draft (if different from reply_text)"
+    },
+    "edited_by_human": {
+      "type": "boolean",
+      "default": false,
+      "description": "Was AI draft edited before sending"
+    },
+    "edited_by": {
+      "type": "string",
+      "description": "User who edited the reply"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "pending_approval",
+        "approved",
+        "sent",
+        "failed"
+      ],
+      "default": "draft",
+      "description": "Reply status"
+    },
+    "requires_approval": {
+      "type": "boolean",
+      "default": false,
+      "description": "Requires human approval before sending"
+    },
+    "approved_by": {
+      "type": "string",
+      "description": "User who approved"
+    },
+    "approved_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When approved"
+    },
+    "sent_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When sent to platform"
+    },
+    "sent_by": {
+      "type": "string",
+      "description": "User who sent"
+    },
+    "reply_type": {
+      "type": "string",
+      "enum": [
+        "faq",
+        "thankyou",
+        "custom",
+        "escalation_notice"
+      ],
+      "description": "Type of reply"
+    },
+    "error_message": {
+      "type": "string",
+      "description": "If failed, error details"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When reply was drafted"
+    }
+  },
+  "required": [
+    "comment_id",
+    "platform",
+    "reply_text"
+  ]
+}

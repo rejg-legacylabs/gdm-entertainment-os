@@ -1,0 +1,83 @@
+{
+  "name": "CommentModerationRule",
+  "type": "object",
+  "properties": {
+    "brand_id": {
+      "type": "string",
+      "description": "Brand this rule applies to"
+    },
+    "brand_name": {
+      "type": "string",
+      "description": "Brand name"
+    },
+    "rule_name": {
+      "type": "string",
+      "description": "Name of rule"
+    },
+    "comment_type": {
+      "type": "string",
+      "enum": [
+        "praise",
+        "question",
+        "complaint",
+        "lead",
+        "spam",
+        "abuse"
+      ],
+      "description": "When this rule applies"
+    },
+    "sentiment": {
+      "type": "string",
+      "enum": [
+        "positive",
+        "neutral",
+        "negative"
+      ],
+      "description": "Apply to sentiment (optional)"
+    },
+    "spam_threshold": {
+      "type": "number",
+      "description": "Spam score threshold (0-100)"
+    },
+    "auto_reply_enabled": {
+      "type": "boolean",
+      "default": false,
+      "description": "Can auto-reply for this type"
+    },
+    "requires_human_approval": {
+      "type": "boolean",
+      "default": false,
+      "description": "Requires approval before reply"
+    },
+    "escalate_if_no_reply": {
+      "type": "boolean",
+      "default": false,
+      "description": "Escalate if not replied within SLA"
+    },
+    "reply_sla_hours": {
+      "type": "number",
+      "description": "Hours to respond (SLA)"
+    },
+    "auto_escalate_user": {
+      "type": "string",
+      "description": "Auto-escalate to this user"
+    },
+    "template_reply_suggestion": {
+      "type": "string",
+      "description": "Suggested reply template"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive"
+      ],
+      "default": "active"
+    }
+  },
+  "required": [
+    "brand_id",
+    "rule_name",
+    "comment_type"
+  ]
+}

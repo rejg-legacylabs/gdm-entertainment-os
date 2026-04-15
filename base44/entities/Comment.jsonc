@@ -1,0 +1,151 @@
+{
+  "name": "Comment",
+  "type": "object",
+  "properties": {
+    "platform_comment_id": {
+      "type": "string",
+      "description": "Comment ID from social platform"
+    },
+    "platform": {
+      "type": "string",
+      "enum": [
+        "instagram",
+        "facebook",
+        "linkedin",
+        "tiktok",
+        "youtube",
+        "twitter"
+      ],
+      "description": "Source platform"
+    },
+    "post_id": {
+      "type": "string",
+      "description": "Associated post ID"
+    },
+    "campaign_id": {
+      "type": "string",
+      "description": "Campaign ID"
+    },
+    "campaign_name": {
+      "type": "string",
+      "description": "Campaign name"
+    },
+    "brand_id": {
+      "type": "string",
+      "description": "Brand ID"
+    },
+    "brand_name": {
+      "type": "string",
+      "description": "Brand name"
+    },
+    "connected_account_id": {
+      "type": "string",
+      "description": "Connected account ID where comment appeared"
+    },
+    "commenter_id": {
+      "type": "string",
+      "description": "Commenter's platform ID"
+    },
+    "commenter_name": {
+      "type": "string",
+      "description": "Commenter's name"
+    },
+    "commenter_handle": {
+      "type": "string",
+      "description": "Commenter's handle"
+    },
+    "commenter_avatar_url": {
+      "type": "string",
+      "description": "Commenter's avatar"
+    },
+    "comment_text": {
+      "type": "string",
+      "description": "Full comment text"
+    },
+    "comment_timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When comment was posted on platform"
+    },
+    "comment_type": {
+      "type": "string",
+      "enum": [
+        "praise",
+        "question",
+        "complaint",
+        "lead",
+        "spam",
+        "abuse",
+        "neutral",
+        "unclassified"
+      ],
+      "default": "unclassified",
+      "description": "Classified comment type"
+    },
+    "sentiment": {
+      "type": "string",
+      "enum": [
+        "positive",
+        "neutral",
+        "negative"
+      ],
+      "description": "Comment sentiment"
+    },
+    "spam_score": {
+      "type": "number",
+      "description": "0-100 spam likelihood"
+    },
+    "is_spam": {
+      "type": "boolean",
+      "default": false,
+      "description": "Flagged as spam"
+    },
+    "is_sensitive": {
+      "type": "boolean",
+      "default": false,
+      "description": "Flagged as sensitive/legal/urgent"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "urgent"
+      ],
+      "default": "medium",
+      "description": "Response priority"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "new",
+        "reviewed",
+        "replied",
+        "archived",
+        "escalated"
+      ],
+      "default": "new",
+      "description": "Comment status"
+    },
+    "assigned_to": {
+      "type": "string",
+      "description": "Assigned manager email"
+    },
+    "ingestion_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When synced into app"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Internal notes"
+    }
+  },
+  "required": [
+    "platform_comment_id",
+    "platform",
+    "post_id",
+    "comment_text"
+  ]
+}

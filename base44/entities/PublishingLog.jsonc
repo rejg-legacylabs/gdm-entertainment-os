@@ -1,0 +1,106 @@
+{
+  "name": "PublishingLog",
+  "type": "object",
+  "properties": {
+    "post_id": {
+      "type": "string",
+      "description": "Associated post ID"
+    },
+    "post_title": {
+      "type": "string",
+      "description": "Post title for reference"
+    },
+    "campaign_id": {
+      "type": "string",
+      "description": "Associated campaign ID"
+    },
+    "campaign_name": {
+      "type": "string",
+      "description": "Campaign name"
+    },
+    "brand_id": {
+      "type": "string",
+      "description": "Brand ID"
+    },
+    "brand_name": {
+      "type": "string",
+      "description": "Brand name"
+    },
+    "connected_account_id": {
+      "type": "string",
+      "description": "Connected social account ID"
+    },
+    "platform": {
+      "type": "string",
+      "enum": [
+        "instagram",
+        "facebook",
+        "linkedin",
+        "tiktok",
+        "youtube",
+        "twitter"
+      ],
+      "description": "Target platform"
+    },
+    "account_name": {
+      "type": "string",
+      "description": "Social account name"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "approved",
+        "queued",
+        "publishing",
+        "published",
+        "failed",
+        "retrying",
+        "canceled"
+      ],
+      "default": "draft",
+      "description": "Publishing status"
+    },
+    "scheduled_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When post was scheduled to publish"
+    },
+    "published_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When post actually published"
+    },
+    "platform_post_id": {
+      "type": "string",
+      "description": "Post ID from social platform"
+    },
+    "platform_post_url": {
+      "type": "string",
+      "description": "URL to published post on platform"
+    },
+    "published_by": {
+      "type": "string",
+      "description": "User email who published"
+    },
+    "retry_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of publish retries"
+    },
+    "last_retry_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last retry timestamp"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Internal notes"
+    }
+  },
+  "required": [
+    "post_id",
+    "platform",
+    "status"
+  ]
+}
