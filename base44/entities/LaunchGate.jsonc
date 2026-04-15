@@ -1,0 +1,82 @@
+{
+  "name": "LaunchGate",
+  "type": "object",
+  "properties": {
+    "campaign_id": {
+      "type": "string",
+      "description": "Associated campaign ID"
+    },
+    "campaign_name": {
+      "type": "string",
+      "description": "Campaign name"
+    },
+    "client_id": {
+      "type": "string",
+      "description": "Associated client ID"
+    },
+    "payment_required": {
+      "type": "boolean",
+      "default": false,
+      "description": "Is payment required before launch"
+    },
+    "payment_status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "partially_paid",
+        "paid"
+      ],
+      "default": "pending",
+      "description": "Current payment status"
+    },
+    "invoice_id": {
+      "type": "string",
+      "description": "Associated invoice ID"
+    },
+    "total_due": {
+      "type": "number",
+      "description": "Total amount due"
+    },
+    "amount_paid": {
+      "type": "number",
+      "default": 0,
+      "description": "Amount paid"
+    },
+    "approval_required": {
+      "type": "boolean",
+      "default": true,
+      "description": "Is client approval required"
+    },
+    "approval_status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "rejected"
+      ],
+      "default": "pending",
+      "description": "Approval status"
+    },
+    "approved_by": {
+      "type": "string",
+      "description": "User ID of approver"
+    },
+    "approved_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Approval timestamp"
+    },
+    "can_launch": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether all gates are cleared for launch"
+    },
+    "blocked_reason": {
+      "type": "string",
+      "description": "Reason if blocked from launch"
+    }
+  },
+  "required": [
+    "campaign_id"
+  ]
+}

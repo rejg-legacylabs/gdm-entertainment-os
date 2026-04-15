@@ -1,0 +1,104 @@
+{
+  "name": "Proposal",
+  "type": "object",
+  "properties": {
+    "proposal_number": {
+      "type": "string",
+      "description": "Unique proposal number"
+    },
+    "client_id": {
+      "type": "string",
+      "description": "Associated client ID"
+    },
+    "client_name": {
+      "type": "string",
+      "description": "Client name"
+    },
+    "campaign_id": {
+      "type": "string",
+      "description": "Associated campaign ID"
+    },
+    "campaign_name": {
+      "type": "string",
+      "description": "Campaign name"
+    },
+    "proposal_type": {
+      "type": "string",
+      "enum": [
+        "campaign",
+        "package",
+        "services"
+      ],
+      "description": "Type of proposal"
+    },
+    "scope_of_work": {
+      "type": "string",
+      "description": "Detailed scope of work"
+    },
+    "deliverables": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of deliverables"
+    },
+    "platforms": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Platforms included"
+    },
+    "estimated_price": {
+      "type": "number",
+      "description": "Estimated total price"
+    },
+    "price_breakdown": {
+      "type": "object",
+      "description": "Itemized price breakdown"
+    },
+    "timeline": {
+      "type": "string",
+      "description": "Project timeline/duration"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Proposed start date"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Proposed end date"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "sent",
+        "viewed",
+        "accepted",
+        "rejected",
+        "expired"
+      ],
+      "default": "draft",
+      "description": "Proposal status"
+    },
+    "payment_condition": {
+      "type": "string",
+      "description": "Payment condition for launch"
+    },
+    "approval_workflow": {
+      "type": "string",
+      "description": "Approval process"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Internal notes"
+    }
+  },
+  "required": [
+    "proposal_number",
+    "client_id"
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "name": "TeamAssignment",
+  "type": "object",
+  "properties": {
+    "employee_id": {
+      "type": "string",
+      "description": "Employee user ID"
+    },
+    "employee_name": {
+      "type": "string",
+      "description": "Employee name"
+    },
+    "client_id": {
+      "type": "string",
+      "description": "Assigned client ID"
+    },
+    "client_name": {
+      "type": "string",
+      "description": "Client name"
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "account_manager",
+        "social_media_manager",
+        "strategist",
+        "content_creator"
+      ],
+      "description": "Role for this assignment"
+    },
+    "responsibility": {
+      "type": "string",
+      "description": "Specific responsibilities for this assignment"
+    },
+    "primary_contact": {
+      "type": "boolean",
+      "default": false,
+      "description": "Is this the primary contact for the client"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Assignment start date"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Assignment end date (if applicable)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive"
+      ],
+      "default": "active",
+      "description": "Assignment status"
+    }
+  },
+  "required": [
+    "employee_id",
+    "client_id"
+  ]
+}

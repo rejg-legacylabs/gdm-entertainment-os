@@ -1,0 +1,108 @@
+{
+  "name": "Client",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Client company name"
+    },
+    "website": {
+      "type": "string",
+      "description": "Client website URL"
+    },
+    "industry": {
+      "type": "string",
+      "description": "Industry vertical"
+    },
+    "contact_person": {
+      "type": "string",
+      "description": "Primary contact name"
+    },
+    "contact_email": {
+      "type": "string",
+      "description": "Primary contact email"
+    },
+    "contact_phone": {
+      "type": "string",
+      "description": "Primary contact phone"
+    },
+    "assigned_manager_id": {
+      "type": "string",
+      "description": "Assigned account manager user ID"
+    },
+    "package_tier": {
+      "type": "string",
+      "enum": [
+        "starter",
+        "growth",
+        "premium",
+        "elite",
+        "custom"
+      ],
+      "description": "Current package subscription"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "onboarding",
+        "active",
+        "paused",
+        "inactive"
+      ],
+      "default": "onboarding",
+      "description": "Client account status"
+    },
+    "approval_required": {
+      "type": "boolean",
+      "default": true,
+      "description": "Require client approval before campaign launch"
+    },
+    "payment_required_to_launch": {
+      "type": "boolean",
+      "default": true,
+      "description": "Require payment before campaign can launch"
+    },
+    "target_audience": {
+      "type": "string",
+      "description": "Client target audience description"
+    },
+    "brand_voice": {
+      "type": "string",
+      "description": "Brand voice and tone guidelines"
+    },
+    "social_links": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Client social media links"
+    },
+    "onboarding_completed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether client onboarding is complete"
+    },
+    "monthly_budget": {
+      "type": "number",
+      "description": "Client monthly budget"
+    },
+    "contract_start_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Contract start date"
+    },
+    "contract_end_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Contract end date"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Internal notes"
+    }
+  },
+  "required": [
+    "name",
+    "contact_email"
+  ]
+}

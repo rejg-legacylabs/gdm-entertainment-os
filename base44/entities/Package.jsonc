@@ -1,0 +1,102 @@
+{
+  "name": "Package",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "enum": [
+        "starter",
+        "growth",
+        "premium",
+        "elite",
+        "custom"
+      ],
+      "description": "Package tier name"
+    },
+    "display_name": {
+      "type": "string",
+      "description": "Display name for package"
+    },
+    "description": {
+      "type": "string",
+      "description": "Package description"
+    },
+    "monthly_price": {
+      "type": "number",
+      "description": "Monthly retainer price"
+    },
+    "setup_fee": {
+      "type": "number",
+      "description": "One-time setup fee"
+    },
+    "features": {
+      "type": "object",
+      "properties": {
+        "posts_per_month": {
+          "type": "number"
+        },
+        "platforms": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "ai_content_generation": {
+          "type": "boolean"
+        },
+        "ai_campaign_strategy": {
+          "type": "boolean"
+        },
+        "ai_reply_suggestions": {
+          "type": "boolean"
+        },
+        "video_clipping": {
+          "type": "boolean"
+        },
+        "analytics_reporting": {
+          "type": "boolean"
+        },
+        "donor_campaigns": {
+          "type": "boolean"
+        },
+        "recruiting_campaigns": {
+          "type": "boolean"
+        },
+        "autopilot_mode": {
+          "type": "boolean"
+        },
+        "client_approval_workflow": {
+          "type": "boolean"
+        },
+        "dedicated_manager": {
+          "type": "boolean"
+        },
+        "priority_turnaround": {
+          "type": "boolean"
+        },
+        "custom_reports": {
+          "type": "boolean"
+        },
+        "max_campaigns_active": {
+          "type": "number"
+        },
+        "revision_limit": {
+          "type": "number"
+        }
+      },
+      "description": "Included features"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive"
+      ],
+      "default": "active"
+    }
+  },
+  "required": [
+    "name",
+    "display_name"
+  ]
+}
