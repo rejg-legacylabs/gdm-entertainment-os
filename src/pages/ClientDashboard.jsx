@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
-import { Lock, CheckCircle2, AlertCircle, DollarSign, FileText, Calendar, Eye } from 'lucide-react';
+import { Lock, CheckCircle2, AlertCircle, DollarSign, FileText, Calendar, Eye, TrendingUp } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import InteractiveMetricCard from '@/components/command-center/InteractiveMetricCard';
