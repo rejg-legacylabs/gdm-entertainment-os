@@ -1,0 +1,147 @@
+{
+  "name": "FailedActionRetry",
+  "type": "object",
+  "properties": {
+    "original_action_type": {
+      "type": "string",
+      "enum": [
+        "publish_post",
+        "send_reply",
+        "sync_analytics",
+        "sync_comments"
+      ],
+      "description": "What was being done"
+    },
+    "entity_type": {
+      "type": "string",
+      "enum": [
+        "post",
+        "comment_reply"
+      ],
+      "description": "What entity failed"
+    },
+    "entity_id": {
+      "type": "string",
+      "description": "ID of failed entity"
+    },
+    "connected_account_id": {
+      "type": "string",
+      "description": "Account that failed"
+    },
+    "account_name": {
+      "type": "string"
+    },
+    "platform": {
+      "type": "string",
+      "enum": [
+        "instagram",
+        "facebook",
+        "linkedin",
+        "tiktok",
+        "youtube",
+        "twitter"
+      ]
+    },
+    "client_id": {
+      "type": "string"
+    },
+    "client_name": {
+      "type": "string"
+    },
+    "campaign_id": {
+      "type": "string"
+    },
+    "campaign_name": {
+      "type": "string"
+    },
+    "error_type": {
+      "type": "string",
+      "enum": [
+        "token_expired",
+        "token_invalid",
+        "missing_permissions",
+        "rate_limit",
+        "invalid_media",
+        "account_disabled",
+        "network_error",
+        "api_error",
+        "unknown"
+      ],
+      "description": "Type of failure"
+    },
+    "error_message": {
+      "type": "string",
+      "description": "Full error details"
+    },
+    "error_code": {
+      "type": "string",
+      "description": "Platform error code"
+    },
+    "first_failed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "last_retry_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "retry_count": {
+      "type": "number",
+      "default": 0
+    },
+    "max_retries": {
+      "type": "number",
+      "default": 3
+    },
+    "next_retry_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When to try again"
+    },
+    "is_retryable": {
+      "type": "boolean",
+      "default": true,
+      "description": "Can this be retried"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending_retry",
+        "retrying",
+        "failed_permanently",
+        "resolved",
+        "manual_retry_pending"
+      ],
+      "default": "pending_retry"
+    },
+    "requires_manual_intervention": {
+      "type": "boolean",
+      "default": false,
+      "description": "Needs human action"
+    },
+    "required_action": {
+      "type": "string",
+      "description": "What needs to be done (e.g., 'Reconnect account', 'Add missing permissions')"
+    },
+    "retry_strategy": {
+      "type": "string",
+      "enum": [
+        "exponential_backoff",
+        "immediate",
+        "manual_only"
+      ],
+      "default": "exponential_backoff"
+    },
+    "payload": {
+      "type": "object",
+      "description": "Original action data for retry"
+    }
+  },
+  "required": [
+    "original_action_type",
+    "entity_type",
+    "entity_id",
+    "connected_account_id",
+    "error_type"
+  ]
+}

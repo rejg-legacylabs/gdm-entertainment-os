@@ -1,0 +1,199 @@
+{
+  "name": "ConnectorHealth",
+  "type": "object",
+  "properties": {
+    "connected_account_id": {
+      "type": "string",
+      "description": "Associated connected account"
+    },
+    "account_name": {
+      "type": "string",
+      "description": "Account display name"
+    },
+    "platform": {
+      "type": "string",
+      "enum": [
+        "instagram",
+        "facebook",
+        "linkedin",
+        "tiktok",
+        "youtube",
+        "twitter"
+      ],
+      "description": "Platform"
+    },
+    "client_id": {
+      "type": "string",
+      "description": "Client owning this account"
+    },
+    "client_name": {
+      "type": "string"
+    },
+    "overall_health_score": {
+      "type": "number",
+      "default": 100,
+      "description": "0-100 health score"
+    },
+    "token_status": {
+      "type": "string",
+      "enum": [
+        "valid",
+        "expiring_soon",
+        "expired",
+        "refresh_failed"
+      ],
+      "default": "valid",
+      "description": "Token health"
+    },
+    "token_expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When token expires"
+    },
+    "token_last_refreshed": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last successful refresh"
+    },
+    "permissions_valid": {
+      "type": "boolean",
+      "default": true,
+      "description": "All required permissions present"
+    },
+    "missing_permissions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Missing required permissions"
+    },
+    "last_successful_sync": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last successful data sync"
+    },
+    "analytics_sync_status": {
+      "type": "string",
+      "enum": [
+        "synced",
+        "syncing",
+        "failed",
+        "never_synced"
+      ],
+      "default": "synced"
+    },
+    "analytics_last_failed": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When analytics sync last failed"
+    },
+    "analytics_fail_count": {
+      "type": "number",
+      "default": 0
+    },
+    "comment_sync_status": {
+      "type": "string",
+      "enum": [
+        "synced",
+        "syncing",
+        "failed",
+        "never_synced"
+      ],
+      "default": "synced"
+    },
+    "comment_last_failed": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "comment_fail_count": {
+      "type": "number",
+      "default": 0
+    },
+    "publish_sync_status": {
+      "type": "string",
+      "enum": [
+        "operational",
+        "syncing",
+        "failed",
+        "disabled"
+      ],
+      "default": "operational"
+    },
+    "publish_last_failed": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "publish_fail_count": {
+      "type": "number",
+      "default": 0
+    },
+    "failed_actions_pending": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of failed publishes waiting for retry"
+    },
+    "reconnect_required": {
+      "type": "boolean",
+      "default": false,
+      "description": "Account needs reconnection"
+    },
+    "reconnect_reason": {
+      "type": "string",
+      "description": "Why reconnection is needed"
+    },
+    "status_alerts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "alert_type": {
+            "type": "string",
+            "enum": [
+              "token_expiring",
+              "token_expired",
+              "reconnect_needed",
+              "missing_permissions",
+              "analytics_failed",
+              "comment_failed",
+              "publish_failed"
+            ]
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "info",
+              "warning",
+              "critical"
+            ]
+          },
+          "message": {
+            "type": "string"
+          },
+          "first_occurred": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "description": "Current alerts"
+    },
+    "last_health_check": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When health was last checked"
+    },
+    "last_health_check_passed": {
+      "type": "boolean",
+      "default": true
+    },
+    "health_check_notes": {
+      "type": "string",
+      "description": "Details from last health check"
+    }
+  },
+  "required": [
+    "connected_account_id",
+    "platform",
+    "client_id"
+  ]
+}
