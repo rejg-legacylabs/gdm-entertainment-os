@@ -1,164 +1,166 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Calendar, Zap } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { base44 } from '@/api/base44Client';
+import { ChevronRight } from 'lucide-react';
 
-export default function CampaignBasics({ onNext }) {
-  const [basics, setBasics] = useState({
-    name: '',
-    brand: '',
-    objective: '',
-    duration: '30',
-    startDate: new Date().toISOString().split('T')[0],
-    frequency: 'balanced',
-    mode: 'assisted',
+const campaignGoals = [
+  { value: 'awareness', label: 'Build Awareness' },
+  { value: 'engagement', label: 'Increase Engagement' },
+  { value: 'leads', label: 'Generate Leads' },
+  { value: 'donations', label: 'Drive Donations' },
+  { value: 'recruiting', label: 'Recruiting' },
+  { value: 'sales', label: 'Drive Sales' },
+  { value: 'event', label: 'Event Promotion' },
+];
+
+const durations = [
+  { value: 7, label: '7 days' },
+  { value: 14, label: '2 weeks' },
+  { value: 30, label: '30 days' },
+  { value: 60, label: '60 days' },
+];
+
+export default function CampaignBasics({ data, onNext }) {
+  const { data: brands = [] } = useQuery({
+    queryKey: ['brands'],
+    queryFn: () => base44.entities.Brand.list(),
   });
 
-  const modeDescriptions = {
-    manual: 'You review and edit everything before posting',
-    assisted: 'AI generates, you approve key decisions',
-    autopilot: 'AI builds and schedules with minimal input',
-  };
-
-  const frequencyOptions = {
-    light: '2-3 posts per week',
-    balanced: '4-5 posts per week',
-    aggressive: '6-7+ posts per week',
-  };
+  const [formData, setFormData] = useState({
+    name: data.basics?.name || '',
+    brand: data.basics?.brand || '',
+    goal: data.basics?.goal || '',
+    targetAudience: data.basics?.targetAudience || '',
+    duration: data.basics?.duration || 30,
+    mode: data.basics?.mode || 'assisted',
+  });
 
   const handleSubmit = () => {
-    onNext({ basics });
+    if (formData.name && formData.brand && formData.goal) {
+      onNext({ basics: formData });
+    }
   };
 
+  const isComplete = formData.name && formData.brand && formData.goal;
+
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-      <div className="bg-card border border-border rounded-xl p-8">
-        <h2 className="text-xl font-semibold text-foreground mb-6">Set Up Your Campaign</h2>
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
+      <div>
+        <h2 className="text-2xl font-semibold text-foreground mb-2">Campaign Basics</h2>
+        <p className="text-muted-foreground">Name your campaign, select a brand, and define your goal.</p>
+      </div>
 
-        <div className="space-y-6">
-          {/* Campaign Name */}
-          <div>
-            <Label className="text-sm font-medium text-foreground mb-2 block">Campaign Name</Label>
-            <Input
-              placeholder="e.g., Spring Fundraising Drive 2026"
-              value={basics.name}
-              onChange={(e) => setBasics({ ...basics, name: e.target.value })}
-              className="text-base"
-            />
-            <p className="text-xs text-muted-foreground mt-2">Make it descriptive and memorable</p>
-          </div>
-
-          {/* Brand Selection */}
-          <div>
-            <Label className="text-sm font-medium text-foreground mb-2 block">Brand / Organization</Label>
-            <Select value={basics.brand} onValueChange={(value) => setBasics({ ...basics, brand: value })}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select a brand" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="GDM Entertainment">GDM Entertainment</SelectItem>
-                <SelectItem value="Headquarters of Hope Foundation">Headquarters of Hope Foundation</SelectItem>
-                <SelectItem value="RE Jones Global">RE Jones Global</SelectItem>
-                <SelectItem value="Legacy Transitional Housing">Legacy Transitional Housing</SelectItem>
-                <SelectItem value="Jobs App">Jobs App</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Campaign Objective */}
-          <div>
-            <Label className="text-sm font-medium text-foreground mb-2 block">Campaign Objective</Label>
-            <Textarea
-              placeholder="What do you want to achieve? e.g., Increase donations, recruit volunteers, drive sign-ups, build brand awareness"
-              value={basics.objective}
-              onChange={(e) => setBasics({ ...basics, objective: e.target.value })}
-              className="resize-none h-20"
-            />
-            <p className="text-xs text-muted-foreground mt-2">AI will use this to guide content creation</p>
-          </div>
-
-          <div className="grid grid-cols-2 gap-6">
-            {/* Start Date */}
-            <div>
-              <Label className="text-sm font-medium text-foreground mb-2 block">Start Date</Label>
-              <div className="relative">
-                <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
-                <input
-                  type="date"
-                  value={basics.startDate}
-                  onChange={(e) => setBasics({ ...basics, startDate: e.target.value })}
-                  className="w-full pl-10 pr-4 py-2 rounded-lg bg-secondary border border-border text-foreground text-sm"
-                />
-              </div>
-            </div>
-
-            {/* Campaign Duration */}
-            <div>
-              <Label className="text-sm font-medium text-foreground mb-2 block">Duration (days)</Label>
-              <Select value={basics.duration} onValueChange={(value) => setBasics({ ...basics, duration: value })}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="7">7 days</SelectItem>
-                  <SelectItem value="14">14 days</SelectItem>
-                  <SelectItem value="30">30 days</SelectItem>
-                  <SelectItem value="60">60 days</SelectItem>
-                  <SelectItem value="90">90 days</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          {/* Posting Frequency */}
-          <div>
-            <Label className="text-sm font-medium text-foreground mb-3 block">Posting Frequency</Label>
-            <div className="space-y-2">
-              {Object.entries(frequencyOptions).map(([key, label]) => (
-                <button
-                  key={key}
-                  onClick={() => setBasics({ ...basics, frequency: key })}
-                  className={`w-full p-3 rounded-lg border-2 text-left transition-all ${
-                    basics.frequency === key
-                      ? 'border-primary bg-primary/10'
-                      : 'border-border bg-transparent hover:border-border/80'
-                  }`}
-                >
-                  <p className="text-sm font-medium text-foreground">{label}</p>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Autopilot Mode */}
-          <div>
-            <Label className="text-sm font-medium text-foreground mb-3 block">Campaign Mode</Label>
-            <div className="space-y-2">
-              {Object.entries(modeDescriptions).map(([key, desc]) => (
-                <button
-                  key={key}
-                  onClick={() => setBasics({ ...basics, mode: key })}
-                  className={`w-full p-3 rounded-lg border-2 text-left transition-all ${
-                    basics.mode === key
-                      ? 'border-primary bg-primary/10'
-                      : 'border-border bg-transparent hover:border-border/80'
-                  }`}
-                >
-                  <p className="text-sm font-medium text-foreground capitalize">{key} Mode</p>
-                  <p className="text-xs text-muted-foreground mt-1">{desc}</p>
-                </button>
-              ))}
-            </div>
-          </div>
+      <div className="space-y-6">
+        {/* Campaign Name */}
+        <div>
+          <Label className="text-foreground font-medium">Campaign Name</Label>
+          <Input
+            className="mt-2 bg-secondary border-border"
+            placeholder="e.g., Spring Fundraiser 2026"
+            value={formData.name}
+            onChange={(e) => setFormData(p => ({ ...p, name: e.target.value }))}
+          />
         </div>
 
-        <Button onClick={handleSubmit} className="w-full mt-8 gap-2" disabled={!basics.name || !basics.brand}>
-          <Zap className="w-4 h-4" />
-          Continue to Information Sources
+        {/* Brand Selection */}
+        <div>
+          <Label className="text-foreground font-medium">Brand</Label>
+          <Select value={formData.brand} onValueChange={(v) => setFormData(p => ({ ...p, brand: v }))}>
+            <SelectTrigger className="mt-2 bg-secondary border-border">
+              <SelectValue placeholder="Select brand" />
+            </SelectTrigger>
+            <SelectContent>
+              {brands.map(b => (
+                <SelectItem key={b.id} value={b.name}>{b.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Campaign Goal */}
+        <div>
+          <Label className="text-foreground font-medium">Campaign Goal</Label>
+          <Select value={formData.goal} onValueChange={(v) => setFormData(p => ({ ...p, goal: v }))}>
+            <SelectTrigger className="mt-2 bg-secondary border-border">
+              <SelectValue placeholder="What's your primary goal?" />
+            </SelectTrigger>
+            <SelectContent>
+              {campaignGoals.map(g => (
+                <SelectItem key={g.value} value={g.value}>{g.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Duration */}
+        <div>
+          <Label className="text-foreground font-medium">Campaign Duration</Label>
+          <Select value={String(formData.duration)} onValueChange={(v) => setFormData(p => ({ ...p, duration: parseInt(v) }))}>
+            <SelectTrigger className="mt-2 bg-secondary border-border">
+              <SelectValue placeholder="How long?" />
+            </SelectTrigger>
+            <SelectContent>
+              {durations.map(d => (
+                <SelectItem key={d.value} value={String(d.value)}>{d.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Target Audience */}
+        <div>
+          <Label className="text-foreground font-medium">Target Audience (Optional)</Label>
+          <Textarea
+            className="mt-2 bg-secondary border-border"
+            placeholder="Describe your ideal audience..."
+            value={formData.targetAudience}
+            onChange={(e) => setFormData(p => ({ ...p, targetAudience: e.target.value }))}
+            rows={3}
+          />
+        </div>
+
+        {/* AI Mode Selection */}
+        <div className="bg-primary/10 border border-primary/20 rounded-lg p-4">
+          <Label className="text-foreground font-medium mb-4 block">Campaign Mode</Label>
+          <div className="space-y-3">
+            {[
+              { value: 'manual', label: 'Full Manual', desc: 'You control everything' },
+              { value: 'assisted', label: 'AI Assisted', desc: 'AI recommends, you decide' },
+              { value: 'autopilot', label: 'Full Autopilot', desc: 'AI runs the entire campaign' },
+            ].map(mode => (
+              <label key={mode.value} className="flex items-start gap-3 p-3 rounded border border-transparent cursor-pointer hover:bg-primary/20 transition">
+                <input
+                  type="radio"
+                  name="mode"
+                  value={mode.value}
+                  checked={formData.mode === mode.value}
+                  onChange={(e) => setFormData(p => ({ ...p, mode: e.target.value }))}
+                  className="mt-1"
+                />
+                <div>
+                  <p className="font-medium text-foreground text-sm">{mode.label}</p>
+                  <p className="text-xs text-muted-foreground">{mode.desc}</p>
+                </div>
+              </label>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="flex justify-end">
+        <Button
+          onClick={handleSubmit}
+          disabled={!isComplete}
+          className="gap-2"
+        >
+          Continue
+          <ChevronRight className="w-4 h-4" />
         </Button>
       </div>
     </motion.div>

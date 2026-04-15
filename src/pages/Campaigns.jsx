@@ -14,6 +14,8 @@ import StatusBadge from '@/components/ui-premium/StatusBadge';
 import ScoreRing from '@/components/ui-premium/ScoreRing';
 import AIInsightPanel from '@/components/ui-premium/AIInsightPanel';
 import CampaignWizard from '@/components/campaign-wizard/CampaignWizard';
+import AutopilotIntro from '@/components/campaign-wizard/AutopilotIntro';
+import { AnimatePresence } from 'framer-motion';
 
 const campaignTypes = ['donor', 'fundraising', 'awareness', 'recruiting', 'hiring', 'event', 'storytelling', 'nonprofit_outreach', 'transitional_housing', 'community_engagement', 'brand_growth'];
 
@@ -23,6 +25,7 @@ export default function Campaigns() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [showCreate, setShowCreate] = useState(false);
   const [showWizard, setShowWizard] = useState(false);
+  const [showAutopilotIntro, setShowAutopilotIntro] = useState(false);
   const [newCampaign, setNewCampaign] = useState({ name: '', brand_name: '', type: '', objective: '', target_audience: '', status: 'draft' });
 
   const { data: campaigns = [] } = useQuery({
@@ -44,17 +47,23 @@ export default function Campaigns() {
     },
   });
 
-  const handleWizardComplete = (campaignData) => {
-    createMutation.mutate({
-      name: campaignData.basics.name,
-      brand_name: campaignData.basics.brand,
-      type: 'storytelling',
-      objective: campaignData.basics.objective,
-      start_date: campaignData.basics.startDate,
-      status: 'active',
-      content_frequency: campaignData.basics.frequency,
-    });
-    setShowWizard(false);
+  const handleWizardComplete = async (campaignData) => {
+    try {
+      const response = await base44.functions.invoke('campaignAutopilot', { campaignData });
+      queryClient.invalidateQueries({ queryKey: ['campaigns'] });
+      setShowWizard(false);
+      
+      // Show success toast
+      const msg = response?.data?.message || 'Campaign created successfully!';
+      if (window.showToast) {
+        window.showToast({ title: 'Success', description: msg });
+      }
+    } catch (error) {
+      console.error('Campaign creation failed:', error);
+      if (window.showToast) {
+        window.showToast({ title: 'Error', description: 'Failed to create campaign', variant: 'destructive' });
+      }
+    }
   };
 
   const filtered = campaigns.filter(c => {
@@ -70,7 +79,28 @@ export default function Campaigns() {
   ];
 
   if (showWizard) {
-    return <CampaignWizard onComplete={handleWizardComplete} onCancel={() => setShowWizard(false)} />;
+    return (
+      <>
+        <AnimatePresence>
+          {showAutopilotIntro && (
+            <AutopilotIntro
+              onStart={() => setShowAutopilotIntro(false)}
+              onCancel={() => {
+                setShowWizard(false);
+                setShowAutopilotIntro(false);
+              }}
+            />
+          )}
+        </AnimatePresence>
+        <CampaignWizard
+          onComplete={handleWizardComplete}
+          onCancel={() => {
+            setShowWizard(false);
+            setShowAutopilotIntro(false);
+          }}
+        />
+      </>
+    );
   }
 
   return (
@@ -103,7 +133,13 @@ export default function Campaigns() {
                 <SelectItem value="completed">Completed</SelectItem>
               </SelectContent>
             </Select>
-            <Button onClick={() => setShowWizard(true)} className="bg-gradient-to-r from-primary to-accent text-primary-foreground hover:from-primary/90 hover:to-accent/90 gap-2">
+            <Button
+              onClick={() => {
+                setShowWizard(true);
+                setShowAutopilotIntro(true);
+              }}
+              className="bg-gradient-to-r from-primary to-accent text-primary-foreground hover:from-primary/90 hover:to-accent/90 gap-2"
+            >
               <Zap className="w-4 h-4" />
               Campaign Autopilot
             </Button>

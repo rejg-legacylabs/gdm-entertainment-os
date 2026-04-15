@@ -1,179 +1,162 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Loader2, CheckCircle2, Sparkles, Target, Zap, TrendingUp } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { ChevronRight, Loader2, Sparkles, TrendingUp, BookOpen } from 'lucide-react';
 
 export default function AIAnalysis({ data, onNext }) {
-  const [isAnalyzing, setIsAnalyzing] = useState(true);
-  const [analysis, setAnalysis] = useState(null);
+  const [analyzing, setAnalyzing] = useState(true);
+  const [analysis, setAnalysis] = useState(data.analysis || {});
 
   useEffect(() => {
-    // Simulate AI analysis
-    const timer = setTimeout(() => {
-      setAnalysis({
-        sourceSummary: 'Analyzed 3 sources totaling 5 key messages and 2 video clips',
-        themes: [
-          { title: 'Community Impact', strength: 'Very Strong', description: 'Real stories of lives changed' },
-          { title: 'Hope & Transformation', strength: 'Strong', description: 'Journey narratives resonate' },
-          { title: 'Urgency & Action', strength: 'Strong', description: 'Clear CTAs for involvement' },
-        ],
-        contentOpportunities: [
-          'Before/after transformation stories',
-          'Testimonial video clips',
-          'Success metrics and impact numbers',
-          'Behind-the-scenes content',
-          'Volunteer spotlights',
-        ],
-        recommendedCTA: 'Donate now to change a life',
-        recommendedPlatforms: ['LinkedIn', 'Instagram', 'Facebook'],
-        recommendedPostTypes: ['carousel', 'video', 'story', 'caption'],
-        confidenceScore: 92,
-      });
-      setIsAnalyzing(false);
-    }, 3000);
+    // Simulate AI analysis with delay
+    const timeout = setTimeout(() => {
+      if (!data.analysis) {
+        const generatedAnalysis = {
+          summary: `AI analyzed ${data.sources?.length || 0} sources and identified key campaign themes and opportunities.`,
+          contentPillars: ['Brand Story', 'Impact & Results', 'Community Voices', 'Call to Action', 'Behind the Scenes'],
+          storyAngles: [
+            'Customer success story with measurable impact',
+            'Day-in-the-life perspective of your community',
+            'Milestone achievement celebration',
+            'Team member expertise and passion',
+            'Real testimonial from beneficiary',
+            'Before/after transformation narrative',
+          ],
+          recommendations: [
+            'Focus on emotional storytelling to increase engagement',
+            'Mix platform-specific content (Reels for TikTok/Instagram, long-form for LinkedIn)',
+            'Incorporate user-generated content for authenticity',
+          ],
+        };
+        setAnalysis(generatedAnalysis);
+      }
+      setAnalyzing(false);
+    }, 2000);
 
-    return () => clearTimeout(timer);
-  }, []);
+    return () => clearTimeout(timeout);
+  }, [data.analysis, data.sources]);
 
-  if (isAnalyzing) {
-    return (
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-        <div className="bg-card border border-border rounded-xl p-12 text-center">
-          <motion.div animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity }}>
-            <Sparkles className="w-12 h-12 text-primary mx-auto mb-4" />
-          </motion.div>
-          <h2 className="text-2xl font-semibold text-foreground mb-2">AI is analyzing your sources</h2>
-          <p className="text-muted-foreground mb-8">
-            Extracting key messages, identifying story angles, and discovering content opportunities...
-          </p>
-
-          {/* Fake Progress Indicators */}
-          <div className="space-y-3 max-w-sm mx-auto">
-            {[
-              { label: 'Scanning sources...', done: true },
-              { label: 'Extracting themes...', done: true },
-              { label: 'Identifying story angles...', done: false },
-              { label: 'Generating recommendations...', done: false },
-            ].map((item, i) => (
-              <div key={i} className="flex items-center gap-3 text-sm">
-                {item.done ? (
-                  <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
-                ) : (
-                  <Loader2 className="w-4 h-4 text-primary animate-spin flex-shrink-0" />
-                )}
-                <span className="text-muted-foreground">{item.label}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </motion.div>
-    );
-  }
+  const handleContinue = () => {
+    onNext({ analysis });
+  };
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-      {/* Analysis Complete */}
-      <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-green-500/20 rounded-xl p-8">
-        <div className="flex items-center gap-3 mb-4">
-          <CheckCircle2 className="w-6 h-6 text-green-500" />
-          <h2 className="text-xl font-semibold text-foreground">Analysis Complete</h2>
-        </div>
-        <p className="text-muted-foreground">{analysis?.sourceSummary}</p>
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
+      <div>
+        <h2 className="text-2xl font-semibold text-foreground mb-2">AI Analysis</h2>
+        <p className="text-muted-foreground">AI is analyzing your sources to extract insights, themes, and story angles.</p>
       </div>
 
-      {/* Story Themes */}
-      <div className="bg-card border border-border rounded-xl p-8">
-        <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-          <Target className="w-5 h-5 text-primary" />
-          Story Themes Detected
-        </h3>
-        <div className="space-y-3">
-          {analysis?.themes.map((theme, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: i * 0.1 }}
-              className="p-4 rounded-lg bg-secondary/30 border border-border hover:border-primary/30 transition-colors"
-            >
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <p className="font-medium text-foreground">{theme.title}</p>
-                  <p className="text-sm text-muted-foreground mt-1">{theme.description}</p>
-                </div>
-                <span className="text-xs font-medium text-primary ml-4 whitespace-nowrap">{theme.strength}</span>
+      {analyzing ? (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="flex flex-col items-center justify-center py-16 gap-4"
+        >
+          <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
+            <Loader2 className="w-6 h-6 text-primary animate-spin" />
+          </div>
+          <p className="text-foreground font-medium">AI Director analyzing sources...</p>
+          <p className="text-sm text-muted-foreground">Extracting themes, angles, and recommendations</p>
+        </motion.div>
+      ) : (
+        <div className="space-y-6">
+          {/* Summary */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-primary/10 border border-primary/20 rounded-lg p-6"
+          >
+            <div className="flex gap-3">
+              <Sparkles className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+              <div>
+                <h3 className="font-semibold text-foreground mb-1">AI Summary</h3>
+                <p className="text-sm text-foreground/80">{analysis.summary}</p>
               </div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
+            </div>
+          </motion.div>
 
-      {/* Content Opportunities */}
-      <div className="bg-card border border-border rounded-xl p-8">
-        <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-          <Zap className="w-5 h-5 text-primary" />
-          Content Opportunities
-        </h3>
-        <div className="grid grid-cols-1 gap-3">
-          {analysis?.contentOpportunities.map((opp, i) => (
+          {/* Content Pillars */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="space-y-3"
+          >
+            <div className="flex items-center gap-2">
+              <BookOpen className="w-5 h-5 text-primary" />
+              <h3 className="font-semibold text-foreground">Content Pillars</h3>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              {analysis.contentPillars?.map((pillar, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.15 + i * 0.05 }}
+                  className="bg-secondary/30 rounded-lg p-3 border border-border"
+                >
+                  <p className="text-sm font-medium text-foreground">{pillar}</p>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Story Angles */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="space-y-3"
+          >
+            <div className="flex items-center gap-2">
+              <TrendingUp className="w-5 h-5 text-primary" />
+              <h3 className="font-semibold text-foreground">Story Angles</h3>
+            </div>
+            <div className="space-y-2">
+              {analysis.storyAngles?.map((angle, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.25 + i * 0.05 }}
+                  className="flex gap-3 p-3 bg-secondary/20 rounded-lg border border-border"
+                >
+                  <span className="text-primary font-semibold flex-shrink-0">→</span>
+                  <p className="text-sm text-foreground">{angle}</p>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* AI Recommendations */}
+          {analysis.recommendations && (
             <motion.div
-              key={i}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1 }}
-              className="flex items-center gap-3 p-3 rounded-lg bg-secondary/20 border border-border/50"
+              transition={{ delay: 0.3 }}
+              className="bg-green-500/10 border border-green-500/20 rounded-lg p-6"
             >
-              <div className="w-2 h-2 rounded-full bg-primary" />
-              <span className="text-sm text-foreground">{opp}</span>
+              <h3 className="font-semibold text-foreground mb-3">AI Recommendations</h3>
+              <ul className="space-y-2">
+                {analysis.recommendations.map((rec, i) => (
+                  <li key={i} className="text-sm text-foreground/80 flex gap-2">
+                    <span className="text-green-400">✓</span>
+                    {rec}
+                  </li>
+                ))}
+              </ul>
             </motion.div>
-          ))}
+          )}
         </div>
-      </div>
+      )}
 
-      {/* Recommendations */}
-      <div className="grid grid-cols-2 gap-4">
-        <div className="bg-card border border-border rounded-xl p-6">
-          <p className="text-xs font-medium text-muted-foreground mb-2">RECOMMENDED CTA</p>
-          <p className="text-lg font-semibold text-foreground">{analysis?.recommendedCTA}</p>
-        </div>
-        <div className="bg-card border border-border rounded-xl p-6">
-          <p className="text-xs font-medium text-muted-foreground mb-2">RECOMMENDED PLATFORMS</p>
-          <div className="flex flex-wrap gap-2">
-            {analysis?.recommendedPlatforms.map((p) => (
-              <span key={p} className="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-primary/20 text-primary">
-                {p}
-              </span>
-            ))}
-          </div>
-        </div>
+      <div className="flex justify-end">
+        <Button onClick={handleContinue} disabled={analyzing} className="gap-2">
+          Build Campaign Content
+          <ChevronRight className="w-4 h-4" />
+        </Button>
       </div>
-
-      {/* AI Confidence */}
-      <div className="bg-card border border-border rounded-xl p-6">
-        <div className="flex items-center justify-between mb-3">
-          <h4 className="font-medium text-foreground flex items-center gap-2">
-            <TrendingUp className="w-4 h-4 text-primary" />
-            AI Confidence Score
-          </h4>
-          <span className={cn(
-            'text-lg font-bold',
-            analysis?.confidenceScore >= 90 ? 'text-green-400' : analysis?.confidenceScore >= 70 ? 'text-primary' : 'text-amber-400'
-          )}>
-            {analysis?.confidenceScore}%
-          </span>
-        </div>
-        <div className="w-full bg-secondary rounded-full h-2">
-          <div
-            className="bg-gradient-to-r from-primary to-accent rounded-full h-2 transition-all duration-500"
-            style={{ width: `${analysis?.confidenceScore}%` }}
-          />
-        </div>
-      </div>
-
-      <Button onClick={() => onNext({ analysis })} className="w-full">
-        Continue to Campaign Build
-      </Button>
     </motion.div>
   );
 }
