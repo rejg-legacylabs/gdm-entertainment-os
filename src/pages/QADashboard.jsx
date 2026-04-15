@@ -110,7 +110,6 @@ const scenarioDefinitions = [
 export default function QADashboard() {
   const queryClient = useQueryClient();
   const [expandedScenario, setExpandedScenario] = useState(null);
-  const [selectedScenario, setSelectedScenario] = useState(null);
 
   const { data: validationTests = [] } = useQuery({
     queryKey: ['validationTests'],
@@ -132,25 +131,48 @@ export default function QADashboard() {
     queryFn: () => base44.entities.Invoice.list(),
   });
 
+  const { data: approvals = [] } = useQuery({
+    queryKey: ['approvals'],
+    queryFn: () => base44.entities.ClientApproval.list(),
+  });
+
+  const { data: proposals = [] } = useQuery({
+    queryKey: ['proposals'],
+    queryFn: () => base44.entities.Proposal.list(),
+  });
+
+  const { data: launchGates = [] } = useQuery({
+    queryKey: ['launchGates'],
+    queryFn: () => base44.entities.LaunchGate.list(),
+  });
+
   const runValidation = useMutation({
     mutationFn: async (scenarioName) => {
-      // Simulate validation run
-      const test = validationTests.find(t => t.scenario_name === scenarioName) ||
-        {
-          scenario_name: scenarioName,
-          scenario_label: scenarioDefinitions.find(s => s.name === scenarioName)?.label,
+      const existing = validationTests.find(t => t.scenario_name === scenarioName);
+      
+      if (existing) {
+        // Update existing test to running status
+        return await base44.entities.ValidationTest.update(existing.id, {
           status: 'running',
-          steps: [],
-        };
-
+          last_run_date: new Date().toISOString(),
+        });
+      }
+      
+      // Create new test record
       return await base44.entities.ValidationTest.create({
-        ...test,
+        scenario_name: scenarioName,
+        scenario_label: scenarioDefinitions.find(s => s.name === scenarioName)?.label,
         status: 'running',
+        steps: [],
         last_run_date: new Date().toISOString(),
       });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['validationTests'] });
+      // Simulate test completion after 2 seconds
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ['validationTests'] });
+      }, 2000);
     },
   });
 
@@ -163,8 +185,41 @@ export default function QADashboard() {
     const campaign = campaigns.find(c => c.id === test.related_campaign_id);
     const invoice = invoices.find(i => i.id === test.related_invoice_id);
     const client = clients.find(c => c.id === test.related_client_id);
+    const proposal = proposals.find(p => p.id === test.related_proposal_id);
+    const approval = approvals.find(a => a.id === test.related_approval_id);
+    const launchGate = launchGates.find(lg => lg.id === test.related_launch_gate_id);
 
-    return { campaign, invoice, client };
+    return { campaign, invoice, client, proposal, approval, launchGate };
+  };
+
+  // Link demo scenarios to real data
+  const scenarioDataLinks = {
+    monthly_package: () => {
+      const client = clients.find(c => c.name === 'TechStart Inc.');
+      return client ? {
+        client_id: client.id,
+        campaign_id: campaigns.find(c => c.brand_id === client.id)?.id,
+        proposal_id: proposals.find(p => p.proposal_number === 'PROP-001')?.id,
+        invoice_id: invoices.find(i => i.invoice_number === 'INV-001')?.id,
+      } : {};
+    },
+    custom_campaign: () => {
+      const client = clients.find(c => c.name === 'Creative Agency Plus');
+      return client ? {
+        client_id: client.id,
+        campaign_id: campaigns.find(c => c.brand_id === client.id)?.id,
+        proposal_id: proposals.find(p => p.proposal_number === 'PROP-003')?.id,
+      } : {};
+    },
+    payment_gate_blocking: () => {
+      const client = clients.find(c => c.name === 'LocalNews Media');
+      return client ? {
+        client_id: client.id,
+        campaign_id: campaigns.find(c => c.brand_id === client.id)?.id,
+        proposal_id: proposals.find(p => p.proposal_number === 'PROP-002')?.id,
+        invoice_id: invoices.find(i => i.invoice_number === 'INV-002')?.id,
+      } : {};
+    },
   };
 
   // Calculate metrics from actual test records
@@ -172,6 +227,7 @@ export default function QADashboard() {
   const passedTests = validationTests.filter(t => t.status === 'passed').length;
   const failedTests = validationTests.filter(t => t.status === 'failed').length;
   const runningTests = validationTests.filter(t => t.status === 'running').length;
+  const totalTests = scenarioDefinitions.length; // Total visible scenarios
   const passRate = completedTests.length > 0
     ? Math.round((passedTests / completedTests.length) * 100)
     : 0;
@@ -187,10 +243,10 @@ export default function QADashboard() {
       {/* Summary Stats */}
       <div className="grid sm:grid-cols-4 gap-4 mb-8">
         {[
-          { label: 'Total Tests', value: validationTests.length, color: 'blue' },
-          { label: 'Passed', value: passedTests, color: 'emerald' },
-          { label: 'Failed', value: failedTests, color: 'red' },
-          { label: 'Pass Rate', value: `${passRate}%`, color: passRate >= 80 ? 'emerald' : passRate > 0 ? 'amber' : 'slate' },
+          { label: 'Total Tests', value: totalTests, color: 'blue', subtitle: `${validationTests.length} Run` },
+          { label: 'Passed', value: passedTests, color: 'emerald', subtitle: `${Math.round((passedTests / completedTests.length * 100) || 0)}%` },
+          { label: 'Failed', value: failedTests, color: 'red', subtitle: completedTests.length > 0 ? `${failedTests} failed` : 'None yet' },
+          { label: 'Pass Rate', value: `${passRate}%`, color: passRate >= 80 ? 'emerald' : passRate > 0 ? 'amber' : 'slate', subtitle: completedTests.length > 0 ? `${completedTests.length} completed` : 'Run tests' },
         ].map((stat, idx) => {
           const colors = {
             blue: 'bg-blue-500/10 text-blue-400 border-blue-500/30',
@@ -209,6 +265,7 @@ export default function QADashboard() {
             >
               <p className="text-xs font-medium opacity-75 uppercase tracking-widest">{stat.label}</p>
               <p className="text-3xl font-bold mt-1">{stat.value}</p>
+              {stat.subtitle && <p className="text-xs text-muted-foreground mt-2">{stat.subtitle}</p>}
             </motion.div>
           );
         })}
@@ -294,7 +351,7 @@ export default function QADashboard() {
                     <div className="p-6 space-y-6">
                       {/* Steps */}
                       <div className="space-y-2">
-                        <p className="text-sm font-semibold text-foreground mb-3">Test Steps</p>
+                        <p className="text-sm font-semibold text-foreground mb-3">Test Steps ({test?.pass_count || 0}✓ {test?.fail_count || 0}✗)</p>
                         {scenario.steps.map((step, stepIdx) => {
                           const stepStatus = test?.steps?.[stepIdx]?.status || 'pending';
                           const stepIcon = stepStatus === 'passed' ? CheckCircle2 : stepStatus === 'failed' ? AlertCircle : Clock;
@@ -318,51 +375,69 @@ export default function QADashboard() {
 
                       {/* Related Records */}
                       {test && (
-                        <div className="space-y-3">
-                          <p className="text-sm font-semibold text-foreground">Related Records</p>
-                          <div className="grid sm:grid-cols-2 gap-2">
+                        <div className="space-y-3 pt-4 border-t border-border/30">
+                          <p className="text-sm font-semibold text-foreground">Linked Records</p>
+                          <div className="grid sm:grid-cols-2 gap-2 text-sm">
                             {client && (
-                              <div className="p-3 rounded-lg bg-secondary/30 text-sm">
-                                <p className="text-muted-foreground">Client</p>
+                              <div className="p-3 rounded-lg bg-secondary/30">
+                                <p className="text-xs text-muted-foreground mb-1">Client</p>
                                 <p className="font-medium text-foreground">{client.name}</p>
                               </div>
                             )}
                             {campaign && (
-                              <div className="p-3 rounded-lg bg-secondary/30 text-sm">
-                                <p className="text-muted-foreground">Campaign</p>
+                              <div className="p-3 rounded-lg bg-secondary/30">
+                                <p className="text-xs text-muted-foreground mb-1">Campaign</p>
                                 <p className="font-medium text-foreground">{campaign.name}</p>
                               </div>
                             )}
+                            {proposal && (
+                              <div className="p-3 rounded-lg bg-secondary/30">
+                                <p className="text-xs text-muted-foreground mb-1">Proposal</p>
+                                <p className="font-medium text-foreground">{proposal.proposal_number}</p>
+                              </div>
+                            )}
                             {invoice && (
-                              <div className="p-3 rounded-lg bg-secondary/30 text-sm">
-                                <p className="text-muted-foreground">Invoice</p>
+                              <div className="p-3 rounded-lg bg-secondary/30">
+                                <p className="text-xs text-muted-foreground mb-1">Invoice</p>
                                 <p className="font-medium text-foreground">{invoice.invoice_number}</p>
-                                <p className="text-xs text-muted-foreground mt-1">${invoice.total_amount.toLocaleString()}</p>
+                                <p className="text-xs text-muted-foreground mt-1">${invoice.total_amount?.toLocaleString()}</p>
+                              </div>
+                            )}
+                            {approval && (
+                              <div className="p-3 rounded-lg bg-secondary/30">
+                                <p className="text-xs text-muted-foreground mb-1">Approval</p>
+                                <p className="font-medium text-foreground capitalize">{approval.approval_status}</p>
+                              </div>
+                            )}
+                            {launchGate && (
+                              <div className="p-3 rounded-lg bg-secondary/30">
+                                <p className="text-xs text-muted-foreground mb-1">Launch Gate</p>
+                                <p className={`font-medium ${launchGate.can_launch ? 'text-emerald-400' : 'text-amber-400'}`}>
+                                  {launchGate.can_launch ? 'Ready' : 'Blocked'}
+                                </p>
                               </div>
                             )}
                           </div>
                         </div>
                       )}
 
+                      {/* Last Run Info */}
+                      {test?.last_run_date && (
+                        <div className="text-xs text-muted-foreground pt-3 border-t border-border/30">
+                          Last run: {new Date(test.last_run_date).toLocaleDateString()} {new Date(test.last_run_date).toLocaleTimeString()}
+                        </div>
+                      )}
+
                       {/* Actions */}
-                      <div className="flex gap-3 pt-4 border-t border-border/30">
+                      <div className="flex gap-3 pt-3 border-t border-border/30">
                         <Button
                           onClick={() => runValidation.mutate(scenario.name)}
+                          disabled={testStatus === 'running'}
                           className="flex-1 bg-primary hover:bg-primary/90 gap-2"
                         >
                           <Play className="w-4 h-4" />
-                          Run Test
+                          {testStatus === 'running' ? 'Running...' : 'Run Test'}
                         </Button>
-                        {test && (
-                          <Button
-                            variant="outline"
-                            onClick={() => setSelectedScenario(test)}
-                            className="gap-2"
-                          >
-                            <ExternalLink className="w-4 h-4" />
-                            Details
-                          </Button>
-                        )}
                       </div>
                     </div>
                   </motion.div>
