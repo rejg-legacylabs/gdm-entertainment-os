@@ -34,7 +34,7 @@ import CommentOpsCenter from '@/pages/CommentOpsCenter';
 import AuditDashboard from '@/pages/AuditDashboard';
 import ClientOnboarding from '@/pages/ClientOnboarding';
 import SocialCommandCenter from '@/pages/SocialCommandCenter';
-import ContentStudio from '@/pages/ContentStudio';
+import SocialContentStudio from '@/pages/ContentStudio';
 import SocialAnalytics from '@/pages/SocialAnalytics';
 import SocialCampaignManager from '@/pages/SocialCampaignManager';
 import SocialInbox from '@/pages/SocialInbox';
@@ -98,7 +98,7 @@ const AuthenticatedApp = () => {
         <Route path="/audit-dashboard" element={<AuditDashboard />} />
         <Route path="/onboarding/:clientId" element={<ClientOnboarding />} />
         <Route path="/social-command-center" element={<SocialCommandCenter />} />
-        <Route path="/content-studio-social" element={<ContentStudio />} />
+        <Route path="/content-studio-social" element={<SocialContentStudio />} />
         <Route path="/social-analytics" element={<SocialAnalytics />} />
         <Route path="/campaign-manager" element={<SocialCampaignManager />} />
         <Route path="/social-inbox" element={<SocialInbox />} />
