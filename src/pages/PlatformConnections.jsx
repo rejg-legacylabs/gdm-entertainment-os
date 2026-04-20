@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { AlertCircle, RefreshCw, LogOut, LogIn } from 'lucide-react';
+import { AlertCircle, RefreshCw, LogOut, LogIn, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const PLATFORMS = [
@@ -72,6 +72,14 @@ export default function PlatformConnections() {
     queryFn: () => base44.entities.SocialAccount.list(),
   });
 
+  const { data: secretStatus = {} } = useQuery({
+    queryKey: ['secretsStatus'],
+    queryFn: async () => {
+      const res = await base44.functions.invoke('checkSecretsStatus', {});
+      return res.data.secretStatus;
+    },
+  });
+
   const getDifficultyColor = (difficulty) => {
     switch (difficulty) {
       case 'easy':
@@ -96,18 +104,52 @@ export default function PlatformConnections() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {PLATFORMS.map((platform, idx) => {
             const account = accounts.find(a => a.platform === platform.name);
+            const status = secretStatus[platform.name];
+            const secretsReady = status?.isComplete;
+
             return (
               <motion.div key={platform.name} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: idx * 0.05 }}>
-                <Card className="p-6 space-y-4 border-l-4" style={{ borderLeftColor: platform.color }}>
+                <Card className={`p-6 space-y-4 border-l-4 border-b-2 transition-all ${secretsReady ? 'border-b-emerald-500/50' : 'border-b-red-500/50'}`} style={{ borderLeftColor: platform.color }}>
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-lg font-bold text-foreground">{platform.label}</h3>
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="text-lg font-bold text-foreground">{platform.label}</h3>
+                        {secretsReady ? (
+                          <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                        ) : (
+                          <AlertTriangle className="w-5 h-5 text-red-400" />
+                        )}
+                      </div>
                       <p className="text-xs text-muted-foreground capitalize">{platform.difficulty} setup</p>
                     </div>
                     <Badge className={getDifficultyColor(platform.difficulty)} variant="outline">
                       {platform.difficulty}
                     </Badge>
                   </div>
+
+                  {/* Secrets Status */}
+                  {secretsReady ? (
+                    <div className="bg-emerald-500/10 border border-emerald-500/30 p-3 rounded-lg">
+                      <div className="flex items-center gap-2 text-xs text-emerald-400 font-semibold">
+                        <CheckCircle2 className="w-4 h-4" />
+                        All required credentials set ✓
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="bg-red-500/10 border border-red-500/30 p-3 rounded-lg space-y-2">
+                      <div className="flex items-center gap-2 text-xs text-red-400 font-semibold">
+                        <AlertTriangle className="w-4 h-4" />
+                        Missing credentials
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        <p className="font-mono text-[10px] space-y-1">
+                          {status?.missingSecrets?.map(secret => (
+                            <div key={secret} className="text-red-300">{secret}</div>
+                          ))}
+                        </p>
+                      </div>
+                    </div>
+                  )}
 
                   {account && (
                     <div className="bg-secondary/50 p-3 rounded-lg space-y-1">
@@ -138,10 +180,12 @@ export default function PlatformConnections() {
                     ) : (
                       <Button
                         size="sm"
+                        disabled={!secretsReady}
                         className="w-full gap-2 text-xs"
-                        style={{ backgroundColor: platform.color }}
+                        style={{ backgroundColor: secretsReady ? platform.color : undefined }}
+                        variant={!secretsReady ? 'outline' : 'default'}
                       >
-                        <LogIn className="w-3 h-3" /> Connect
+                        <LogIn className="w-3 h-3" /> {secretsReady ? 'Connect' : 'Add Credentials First'}
                       </Button>
                     )}
                   </div>
