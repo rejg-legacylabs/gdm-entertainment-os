@@ -1,0 +1,80 @@
+{
+  "name": "SocialAnalytics",
+  "type": "object",
+  "properties": {
+    "platform": {
+      "type": "string",
+      "enum": [
+        "facebook",
+        "instagram",
+        "twitter",
+        "linkedin",
+        "tiktok",
+        "youtube",
+        "pinterest",
+        "snapchat"
+      ],
+      "description": "Platform"
+    },
+    "account_id": {
+      "type": "string",
+      "description": "Social account ID"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of analytics"
+    },
+    "followers_count": {
+      "type": "integer",
+      "default": 0
+    },
+    "new_followers": {
+      "type": "integer",
+      "default": 0
+    },
+    "impressions": {
+      "type": "integer",
+      "default": 0
+    },
+    "reach": {
+      "type": "integer",
+      "default": 0
+    },
+    "engagement_rate": {
+      "type": "number",
+      "default": 0,
+      "description": "Engagement rate percentage"
+    },
+    "likes": {
+      "type": "integer",
+      "default": 0
+    },
+    "comments": {
+      "type": "integer",
+      "default": 0
+    },
+    "shares": {
+      "type": "integer",
+      "default": 0
+    },
+    "video_views": {
+      "type": "integer",
+      "default": 0
+    },
+    "link_clicks": {
+      "type": "integer",
+      "default": 0
+    },
+    "organization_id": {
+      "type": "string",
+      "description": "Associated organization"
+    }
+  },
+  "required": [
+    "platform",
+    "account_id",
+    "date",
+    "organization_id"
+  ]
+}

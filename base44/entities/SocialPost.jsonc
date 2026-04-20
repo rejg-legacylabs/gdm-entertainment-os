@@ -1,0 +1,102 @@
+{
+  "name": "SocialPost",
+  "type": "object",
+  "properties": {
+    "platform": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Target platforms"
+    },
+    "content": {
+      "type": "string",
+      "description": "Post text content"
+    },
+    "media_urls": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "URLs to media files"
+    },
+    "hashtags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Hashtags for the post"
+    },
+    "scheduled_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When post should publish"
+    },
+    "published_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When post was published"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "scheduled",
+        "publishing",
+        "published",
+        "failed",
+        "cancelled"
+      ],
+      "default": "draft",
+      "description": "Post status"
+    },
+    "post_type": {
+      "type": "string",
+      "enum": [
+        "post",
+        "story",
+        "reel",
+        "video",
+        "carousel",
+        "thread"
+      ],
+      "description": "Type of post"
+    },
+    "campaign_id": {
+      "type": "string",
+      "description": "Associated campaign"
+    },
+    "engagement_likes": {
+      "type": "integer",
+      "default": 0
+    },
+    "engagement_comments": {
+      "type": "integer",
+      "default": 0
+    },
+    "engagement_shares": {
+      "type": "integer",
+      "default": 0
+    },
+    "engagement_views": {
+      "type": "integer",
+      "default": 0
+    },
+    "platform_post_ids": {
+      "type": "object",
+      "description": "Map of platform post IDs"
+    },
+    "created_by": {
+      "type": "string",
+      "description": "User who created post"
+    },
+    "organization_id": {
+      "type": "string",
+      "description": "Associated organization"
+    }
+  },
+  "required": [
+    "content",
+    "organization_id"
+  ]
+}

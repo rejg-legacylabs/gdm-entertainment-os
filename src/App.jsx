@@ -33,6 +33,12 @@ import FailedPostsCenter from '@/pages/FailedPostsCenter';
 import CommentOpsCenter from '@/pages/CommentOpsCenter';
 import AuditDashboard from '@/pages/AuditDashboard';
 import ClientOnboarding from '@/pages/ClientOnboarding';
+import SocialCommandCenter from '@/pages/SocialCommandCenter';
+import ContentStudio from '@/pages/ContentStudio';
+import SocialAnalytics from '@/pages/SocialAnalytics';
+import SocialCampaignManager from '@/pages/SocialCampaignManager';
+import SocialInbox from '@/pages/SocialInbox';
+import PlatformConnections from '@/pages/PlatformConnections';
 import { initializeDemoData } from '@/lib/demoDataGenerator';
 
 const AuthenticatedApp = () => {
@@ -91,6 +97,12 @@ const AuthenticatedApp = () => {
         <Route path="/comment-ops" element={<CommentOpsCenter />} />
         <Route path="/audit-dashboard" element={<AuditDashboard />} />
         <Route path="/onboarding/:clientId" element={<ClientOnboarding />} />
+        <Route path="/social-command-center" element={<SocialCommandCenter />} />
+        <Route path="/content-studio-social" element={<ContentStudio />} />
+        <Route path="/social-analytics" element={<SocialAnalytics />} />
+        <Route path="/campaign-manager" element={<SocialCampaignManager />} />
+        <Route path="/social-inbox" element={<SocialInbox />} />
+        <Route path="/platform-connections" element={<PlatformConnections />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>

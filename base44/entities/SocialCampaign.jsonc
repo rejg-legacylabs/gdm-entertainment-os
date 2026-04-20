@@ -1,0 +1,99 @@
+{
+  "name": "SocialCampaign",
+  "type": "object",
+  "properties": {
+    "campaign_name": {
+      "type": "string",
+      "description": "Campaign name"
+    },
+    "campaign_type": {
+      "type": "string",
+      "enum": [
+        "donor_drive",
+        "awareness",
+        "program_promotion",
+        "volunteer_recruitment",
+        "fundraiser",
+        "event_promotion"
+      ],
+      "description": "Type of campaign"
+    },
+    "description": {
+      "type": "string",
+      "description": "Campaign description"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Campaign start date"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Campaign end date"
+    },
+    "target_platforms": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Platforms to use"
+    },
+    "target_audience": {
+      "type": "string",
+      "description": "Target audience description"
+    },
+    "goal_type": {
+      "type": "string",
+      "enum": [
+        "donations",
+        "followers",
+        "engagement",
+        "applications"
+      ],
+      "description": "Campaign goal type"
+    },
+    "goal_amount": {
+      "type": "integer",
+      "default": 0,
+      "description": "Target goal amount"
+    },
+    "current_amount": {
+      "type": "integer",
+      "default": 0,
+      "description": "Current progress toward goal"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "active",
+        "paused",
+        "completed"
+      ],
+      "default": "draft",
+      "description": "Campaign status"
+    },
+    "budget": {
+      "type": "integer",
+      "default": 0,
+      "description": "Campaign budget if applicable"
+    },
+    "posts": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Associated post IDs"
+    },
+    "organization_id": {
+      "type": "string",
+      "description": "Associated organization"
+    }
+  },
+  "required": [
+    "campaign_name",
+    "campaign_type",
+    "organization_id"
+  ]
+}

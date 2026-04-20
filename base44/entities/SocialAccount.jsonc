@@ -1,0 +1,85 @@
+{
+  "name": "SocialAccount",
+  "type": "object",
+  "properties": {
+    "platform": {
+      "type": "string",
+      "enum": [
+        "facebook",
+        "instagram",
+        "twitter",
+        "linkedin",
+        "tiktok",
+        "youtube",
+        "pinterest",
+        "snapchat"
+      ],
+      "description": "Social media platform"
+    },
+    "account_name": {
+      "type": "string",
+      "description": "Display name of the account"
+    },
+    "account_handle": {
+      "type": "string",
+      "description": "Username/handle on platform"
+    },
+    "platform_account_id": {
+      "type": "string",
+      "description": "Platform's internal account ID"
+    },
+    "access_token": {
+      "type": "string",
+      "description": "OAuth access token"
+    },
+    "refresh_token": {
+      "type": "string",
+      "description": "OAuth refresh token"
+    },
+    "token_expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the access token expires"
+    },
+    "follower_count": {
+      "type": "integer",
+      "default": 0,
+      "description": "Current follower count"
+    },
+    "following_count": {
+      "type": "integer",
+      "default": 0,
+      "description": "Accounts following"
+    },
+    "post_count": {
+      "type": "integer",
+      "default": 0,
+      "description": "Total posts published"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "connected",
+        "disconnected",
+        "error",
+        "pending"
+      ],
+      "default": "pending",
+      "description": "Connection status"
+    },
+    "last_synced": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last time metrics were synced"
+    },
+    "organization_id": {
+      "type": "string",
+      "description": "Associated organization"
+    }
+  },
+  "required": [
+    "platform",
+    "account_name",
+    "organization_id"
+  ]
+}

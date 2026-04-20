@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard, Building2, Megaphone, PenTool, Video, Calendar,
   Inbox, BarChart3, FolderOpen, Brain, Settings, ChevronLeft, ChevronRight,
-  Sparkles, Crown, DollarSign, FileText, Lock, Zap, CheckCircle2, AlertCircle
+  Sparkles, Crown, DollarSign, FileText, Lock, Zap, CheckCircle2, AlertCircle, Radio
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -38,7 +38,16 @@ const executionOpsItems = [
   { path: '/audit-dashboard', icon: Zap, label: 'Audit Dashboard' },
 ];
 
-const allNavItems = [...navItems, ...revenueOpsItems, ...executionOpsItems, { path: '/settings', icon: Settings, label: 'Settings' }];
+const socialMediaItems = [
+  { path: '/social-command-center', icon: Radio, label: 'Social Hub' },
+  { path: '/content-studio-social', icon: PenTool, label: 'Content Studio' },
+  { path: '/campaign-manager', icon: Megaphone, label: 'Campaigns' },
+  { path: '/social-analytics', icon: BarChart3, label: 'Analytics' },
+  { path: '/social-inbox', icon: Inbox, label: 'Inbox' },
+  { path: '/platform-connections', icon: Zap, label: 'Connections' },
+];
+
+const allNavItems = [...navItems, ...revenueOpsItems, ...executionOpsItems, ...socialMediaItems, { path: '/settings', icon: Settings, label: 'Settings' }];
 
 export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
@@ -81,6 +90,7 @@ export default function Sidebar() {
           // Add divider before sections
           const isRevenueOpsStart = item.path === '/pricing-studio';
           const isExecutionOpsStart = item.path === '/publishing-queue';
+          const isSocialMediaStart = item.path === '/social-command-center';
           
           return (
             <div key={item.path}>
@@ -92,6 +102,11 @@ export default function Sidebar() {
               {isExecutionOpsStart && !collapsed && (
                 <div className="px-3 py-2 mt-2">
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Execution Ops</p>
+                </div>
+              )}
+              {isSocialMediaStart && !collapsed && (
+                <div className="px-3 py-2 mt-2">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Social Media</p>
                 </div>
               )}
               <Link to={item.path}>
