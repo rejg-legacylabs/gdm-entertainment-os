@@ -1,6 +1,7 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
+import AppAssistant from '@/components/ai/AppAssistant';
 
 export default function AppLayout() {
   return (
@@ -9,6 +10,7 @@ export default function AppLayout() {
       <main className="ml-[260px] min-h-screen transition-all duration-300">
         <Outlet />
       </main>
+      <AppAssistant />
     </div>
   );
 }
