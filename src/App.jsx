@@ -34,19 +34,22 @@ import CommentOpsCenter from '@/pages/CommentOpsCenter';
 import AuditDashboard from '@/pages/AuditDashboard';
 import ClientOnboarding from '@/pages/ClientOnboarding';
 import SocialCommandCenter from '@/pages/SocialCommandCenter';
-import SocialContentStudio from '@/pages/ContentStudio';
 import SocialAnalytics from '@/pages/SocialAnalytics';
 import SocialCampaignManager from '@/pages/SocialCampaignManager';
 import SocialInbox from '@/pages/SocialInbox';
 import PlatformConnections from '@/pages/PlatformConnections';
+import DiagnosticCenter from '@/pages/DiagnosticCenter';
 import { initializeDemoData } from '@/lib/demoDataGenerator';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
 
-  // Initialize demo data on mount
+  // Initialize demo data only once per device
   React.useEffect(() => {
-    initializeDemoData();
+    if (!localStorage.getItem('gdm_demo_initialized')) {
+      initializeDemoData();
+      localStorage.setItem('gdm_demo_initialized', 'true');
+    }
   }, []);
 
   if (isLoadingPublicSettings || isLoadingAuth) {
@@ -98,11 +101,11 @@ const AuthenticatedApp = () => {
         <Route path="/audit-dashboard" element={<AuditDashboard />} />
         <Route path="/onboarding/:clientId" element={<ClientOnboarding />} />
         <Route path="/social-command-center" element={<SocialCommandCenter />} />
-        <Route path="/content-studio-social" element={<SocialContentStudio />} />
         <Route path="/social-analytics" element={<SocialAnalytics />} />
         <Route path="/campaign-manager" element={<SocialCampaignManager />} />
         <Route path="/social-inbox" element={<SocialInbox />} />
         <Route path="/platform-connections" element={<PlatformConnections />} />
+        <Route path="/diagnostic-center" element={<DiagnosticCenter />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>
