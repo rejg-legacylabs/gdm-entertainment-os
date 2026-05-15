@@ -4,7 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard, Building2, Megaphone, PenTool, Video, Calendar,
   Inbox, BarChart3, FolderOpen, Brain, Settings, ChevronLeft, ChevronRight,
-  Sparkles, Crown, DollarSign, FileText, Lock, Zap, CheckCircle2, AlertCircle, Radio
+  Sparkles, Crown, DollarSign, FileText, Lock, Zap, CheckCircle2, AlertCircle,
+  Radio, Activity, ShieldCheck
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -47,7 +48,18 @@ const socialMediaItems = [
   { path: '/platform-connections', icon: Zap, label: 'Connections' },
 ];
 
-const allNavItems = [...navItems, ...revenueOpsItems, ...executionOpsItems, ...socialMediaItems, { path: '/settings', icon: Settings, label: 'Settings' }];
+const systemItems = [
+  { path: '/diagnostic-center', icon: Activity, label: 'Diagnostic Center', elite: true },
+  { path: '/settings', icon: Settings, label: 'Settings' },
+];
+
+const allNavItems = [
+  ...navItems,
+  ...revenueOpsItems,
+  ...executionOpsItems,
+  ...socialMediaItems,
+  ...systemItems,
+];
 
 export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
@@ -86,12 +98,12 @@ export default function Sidebar() {
         {allNavItems.map((item) => {
           const isActive = location.pathname === item.path ||
             (item.path !== '/' && location.pathname.startsWith(item.path));
-          
-          // Add divider before sections
+
           const isRevenueOpsStart = item.path === '/pricing-studio';
           const isExecutionOpsStart = item.path === '/publishing-queue';
           const isSocialMediaStart = item.path === '/social-command-center';
-          
+          const isSystemStart = item.path === '/diagnostic-center';
+
           return (
             <div key={item.path}>
               {isRevenueOpsStart && !collapsed && (
@@ -109,51 +121,96 @@ export default function Sidebar() {
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Social Media</p>
                 </div>
               )}
-              <Link to={item.path}>
-                <div
-                  className={cn(
-                    'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group',
-                    isActive
-                      ? 'bg-primary/10 text-primary'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
-                  )}
-                >
-                  <item.icon className={cn('w-5 h-5 flex-shrink-0', isActive && 'text-primary')} />
-                  <AnimatePresence>
-                    {!collapsed && (
-                      <motion.span
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="text-sm font-medium whitespace-nowrap"
-                      >
-                        {item.label}
-                      </motion.span>
-                    )}
-                  </AnimatePresence>
-                  {isActive && (
-                    <motion.div
-                      layoutId="sidebar-indicator"
-                      className="absolute left-0 w-[3px] h-8 bg-primary rounded-r-full"
-                    />
-                  )}
+              {isSystemStart && !collapsed && (
+                <div className="px-3 py-2 mt-4">
+                  <div className="border-t border-border mb-2" />
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">System</p>
                 </div>
+              )}
+              {isSystemStart && collapsed && (
+                <div className="border-t border-border mx-2 mt-3 mb-2" />
+              )}
+
+              <Link to={item.path}>
+                {item.elite ? (
+                  // ELITE DIAGNOSTIC BUTTON — stands out
+                  <div
+                    className={cn(
+                      'relative flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group overflow-hidden',
+                      isActive
+                        ? 'bg-primary text-primary-foreground shadow-lg'
+                        : 'bg-primary/10 border border-primary/30 text-primary hover:bg-primary/20 hover:border-primary/60'
+                    )}
+                    style={{ boxShadow: isActive ? '0 0 20px rgba(99,102,241,0.4)' : '0 0 12px rgba(99,102,241,0.15)' }}
+                  >
+                    {/* Animated pulse ring */}
+                    {!isActive && (
+                      <span
+                        className="absolute right-3 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-primary"
+                        style={{ animation: 'pulse 2s infinite' }}
+                      />
+                    )}
+                    <item.icon className="w-5 h-5 flex-shrink-0" />
+                    <AnimatePresence>
+                      {!collapsed && (
+                        <motion.span
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          className="text-sm font-bold whitespace-nowrap"
+                        >
+                          {item.label}
+                        </motion.span>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                ) : (
+                  // Standard nav item
+                  <div
+                    className={cn(
+                      'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group',
+                      isActive
+                        ? 'bg-primary/10 text-primary'
+                        : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
+                    )}
+                  >
+                    <item.icon className={cn('w-5 h-5 flex-shrink-0', isActive && 'text-primary')} />
+                    <AnimatePresence>
+                      {!collapsed && (
+                        <motion.span
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          className="text-sm font-medium whitespace-nowrap"
+                        >
+                          {item.label}
+                        </motion.span>
+                      )}
+                    </AnimatePresence>
+                    {isActive && (
+                      <motion.div
+                        layoutId="sidebar-indicator"
+                        className="absolute left-0 w-[3px] h-8 bg-primary rounded-r-full"
+                      />
+                    )}
+                  </div>
+                )}
               </Link>
             </div>
           );
         })}
       </nav>
 
-      {/* AI Assistant Badge */}
+      {/* AI Director Badge */}
       <div className="px-3 pb-3">
         <div className={cn(
           'rounded-lg p-3 glass-panel',
           collapsed ? 'flex justify-center' : ''
         )}>
           <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-primary flex-shrink-0" />
+            <ShieldCheck className="w-4 h-4 text-primary flex-shrink-0" />
             {!collapsed && (
-              <span className="text-xs text-muted-foreground">AI Director Active</span>
+              <span className="text-xs text-muted-foreground">GDM OS — All Systems</span>
             )}
           </div>
         </div>
